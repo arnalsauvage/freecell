@@ -59,7 +59,7 @@ class Carte {
             case "K":
                 return "♦";
             case "C":
-                return "❤";
+                return "♥";
             case "P":
                 return "♠";
             case "T":

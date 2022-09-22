@@ -88,8 +88,10 @@ class Partie {
         if (surbrillance) {
             context.fillStyle = "yellow";
         } else {
-            console.log("couleur de fond : " + carte.getCouleur());
             context.fillStyle = "white";
+        }
+        if (carte.valeur == 0) {
+            context.fillStyle = "lightgrey";
         }
         context.fillRect(x, y, 100, 150);
 
