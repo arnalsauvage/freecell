@@ -14,10 +14,10 @@ class Partie {
         this.colonne[7] = new PileDeCartes();
         this.colonne[8] = new PileDeCartes();
 
-        this.pileDePique = new PileDeCouleur();
-        this.pileDeTrefle = new PileDeCouleur();
-        this.pileDeCoeur = new PileDeCouleur();
-        this.pileDeCarreau = new PileDeCouleur();
+        this.pileDePique = new PileDeCouleur("P");
+        this.pileDeTrefle = new PileDeCouleur("T");
+        this.pileDeCoeur = new PileDeCouleur("C");
+        this.pileDeCarreau = new PileDeCouleur("K");
         this.pile = new Array();
         this.pile[1] = this.pileDePique;
         this.pile[2] = this.pileDeCoeur;
@@ -80,14 +80,21 @@ class Partie {
         }
         let canvas = document.getElementById(id);
         let context = canvas.getContext("2d");
+        // bord de la carte
         context.strokeStyle = "black";
         context.strokeRect(x, y, 100, 150);
+        console.log("affichage bord de la carte");
+        // couleur de fond
         if (surbrillance) {
             context.fillStyle = "yellow";
         } else {
+            console.log("couleur de fond : " + carte.getCouleur());
             context.fillStyle = "white";
         }
         context.fillRect(x, y, 100, 150);
+
+        // texte de la carte
+        console.log("dessine carte : " + carte.valeur + "-" + carte.couleur);
         if (carte.estRouge()) {
             context.fillStyle = "red";
         } else {
@@ -95,6 +102,8 @@ class Partie {
         }
         context.font = "30px Arial";
         context.fillText(carte.getNomCourt(), x + 5, y + 24);
+
+
     }
 
     dessineColonne(numero) {
@@ -118,10 +127,11 @@ class Partie {
         if (pile.getCarte() != null) {
             this.dessineCarte(pile.getCarte(), x, y, "Pile");
         } else {
-            console.log("carte null");
+            console.log("carte pile " + numero + " vide");
             let carteVide = new Carte(0, 0);
             carteVide.setCouleurParNumero(numero);
             carteVide.valeur = " ";
+            console.log("carte :" + carteVide.getNom());
             this.dessineCarte(carteVide, x, y, "Pile");
         }
     }
@@ -136,7 +146,7 @@ class Partie {
         if (carte != null) {
             this.dessineCarte(carte, x, y, "CaseLibre");
         } else {
-            console.log("carte null");
+            console.log("carte case libre " + numero + " vide");
             let carteVide = new Carte(0, 0);
             carteVide.setCouleurParNumero(numero);
             carteVide.valeur = " ";
@@ -267,32 +277,9 @@ class Partie {
             }
         }
     }
+
+    demarrePartie() {
+        this.distribue();
+        this.affiche();
+    }
 }
-
-let partie = new Partie();
-partie.distribue();
-console.log(partie.colonne[1].displayCards());
-console.log(partie.colonne[2].displayCards());
-console.log(partie.colonne[3].displayCards());
-console.log(partie.colonne[4].displayCards());
-console.log(partie.colonne[5].displayCards());
-console.log(partie.colonne[6].displayCards());
-console.log(partie.colonne[7].displayCards());
-console.log(partie.colonne[8].displayCards());
-
-partie.dessineColonne(1);
-partie.dessineColonne(2);
-partie.dessineColonne(3);
-partie.dessineColonne(4);
-partie.dessineColonne(5);
-partie.dessineColonne(6);
-partie.dessineColonne(7);
-partie.dessineColonne(8);
-partie.dessinePile(1);
-partie.dessinePile(2);
-partie.dessinePile(3);
-partie.dessinePile(4);
-partie.dessineCaseLibre(1);
-partie.dessineCaseLibre(2);
-partie.dessineCaseLibre(3);
-partie.dessineCaseLibre(4);

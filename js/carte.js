@@ -34,7 +34,6 @@ class Carte {
     }
 
     getCouleur() {
-
         return this.couleur;
     }
 
@@ -158,10 +157,10 @@ class Carte {
     }
 
     getNom() {
-        return "" + this.getNomFigure() + " de " + this.getCouleur();
+        return "" + this.getNomFigure() + " de " + this.getNomCouleur();
     }
 
     getNomCourt() {
-        return "" + this.getNomCourtFigure() + this.getIconeCouleur();
+        return "" + this.getNomCourtFigure() + "      " + this.getIconeCouleur();
     }
 }

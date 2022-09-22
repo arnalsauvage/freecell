@@ -8,11 +8,11 @@ class JeuDeCartes {
         this.ajouteCartesCouleur("C", valeurCarteDebut);
         this.ajouteCartesCouleur("K", valeurCarteDebut);
         this.ajouteCartesCouleur("T", valeurCarteDebut);
-        console.log("Longueur du jeu : " + this.jeuDeCartes.length);
+        console.log("Longueur du jeu : " + this.jeuDeCartes.getNbCartes());
     }
 
     ajouteCartesCouleur(couleur, nombre) {
-        for (let i = 1; i <= 13; i++) {
+        for (let i = nombre; i <= 13; i++) {
             let maCarte = new Carte(i, couleur);
             this.jeuDeCartes.ajouteCarte(maCarte);
         }
@@ -28,5 +28,9 @@ class JeuDeCartes {
 
     prendCarte() {
         return this.jeuDeCartes.prendCarte();
+    }
+
+    getNbCartes() {
+        return this.jeuDeCartes.getNbCartes();
     }
 }

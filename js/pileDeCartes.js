@@ -3,7 +3,6 @@ class PileDeCartes {
     constructor() {
         // init an array with a for
         this.pileDeCartes = new Array(0);
-        console.log("Longueur de la pile : " + this.pileDeCartes.length);
     }
 
     prendCarte() {
@@ -15,8 +14,7 @@ class PileDeCartes {
     }
 
     getCarte() {
-        let getCarte = this.pileDeCartes[this.pileDeCartes.length - 1];
-        return getCarte;
+        return this.pileDeCartes[this.pileDeCartes.length - 1];
     }
 
     ajouteCarte(maCarte) {
@@ -40,19 +38,13 @@ class PileDeCartes {
         return this.pileDeCartes[index];
     }
 
-    getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
-    }
-
     displayCards() {
-        // display all cards in jeDeCartes
+        // display all cards in jeuDeCartes
         console.log("Longueur de la pile : " + this.pileDeCartes.length);
         let carte;
         for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
             carte = this.pileDeCartes[i];
-            console.log(carte.getNom());
+            console.log(i + " - " + carte.getNom());
         }
     }
 }

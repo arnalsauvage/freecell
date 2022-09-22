@@ -71,20 +71,7 @@ class Coup {
     }
 
     coupValable(partie) {
-        let carteJouee = null;
-
-        if (this.origine.slice(0, 3) == "COL") {
-            let colonneOrigine = this.origine.slice(3, 4);
-            carteJouee = partie.getColonne(colonneOrigine).getCarte();
-            this.carte = carteJouee;
-            console.log("Carte jouée : " + carteJouee.getNom() + "colonne " + colonneOrigine);
-        }
-        if (this.origine.slice(0, 3) == "CEL") {
-            let numeroCellule = this.origine.slice(3, 4);
-            carteJouee = partie.getCaseLibre(numeroCellule).getCarte();
-            this.carte = carteJouee;
-            console.log("Carte jouée : " + carteJouee.getNom() + "cellule " + numeroCellule);
-        }
+        let carteJouee = this.recupCarteJouee(partie);
         if (carteJouee == null) {
             console.log("Pas de carte à jouer");
             return false;
@@ -122,23 +109,69 @@ class Coup {
             let numeroPile = this.destination.slice(3, 4);
             let couleurPile = carte.getCouleurParNumero(parseInt(numeroPile));
             console.log("Couleur de la pile : " + couleurPile + " carte jouée : " + carteJouee.getNom() + "numero pile : " + numeroPile);
-            console.log("Couleur attendue : " + carteJouee.getCouleur());
             if (carteJouee.getCouleur() != couleurPile) {
+                console.log("Refus du coup : couleur attendue : " + carteJouee.getCouleur());
                 return false;
             }
-
-            if (carteJouee.getCouleur() == this.destination.slice(3, 4)) {
-
-                // Si la pile est vide, on vérifie que la carte est un 1
-                if (partie.getPile(this.destination.slice(3, 4)).estVide()) {
-                    return carteJouee.getValeur() == 1;
-                }
-                // Si la pile n'est pas vide, on vérifie que la carte est la suivante de la carte du dessus de la pile
-                return carteJouee.getValeur() == partie.getPile(this.destination.slice(3, 4)).getCarte().getValeur() + 1;
+            // Si la pile est vide, on vérifie que la carte est un 1
+            if (partie.getPile(this.destination.slice(3, 4)).estVide()) {
+                console.log("Pile vide");
+                return carteJouee.getValeur() == 1;
             }
+            // Si la pile n'est pas vide, on vérifie que la carte est la suivante de la carte du dessus de la pile
+            return carteJouee.getValeur() == partie.getPile(this.destination.slice(3, 4)).getCarte().getValeur() + 1;
         }
     }
 
+    recupCarteJouee(partie) {
+        let carteJouee = null;
+        if (this.origine.slice(0, 3) == "COL") {
+            let colonneOrigine = this.origine.slice(3, 4);
+            carteJouee = partie.getColonne(colonneOrigine).getCarte();
+            this.carte = carteJouee;
+            console.log("Carte jouée : " + carteJouee.getNom() + "colonne " + colonneOrigine);
+        }
+        if (this.origine.slice(0, 3) == "CEL") {
+            let numeroCellule = this.origine.slice(3, 4);
+            carteJouee = partie.getCaseLibre(numeroCellule).getCarte();
+            this.carte = carteJouee;
+            console.log("Carte jouée : " + carteJouee.getNom() + "cellule " + numeroCellule);
+        }
+        return carteJouee;
+    }
+
+    jouer(partie) {
+        if (this.coupValable(partie)) {
+            let carteJouee = null;
+            console.log("Coup joué : carte " + this.carte + " de " + this.getOrigine() + " vers " + this.getDestination());
+            partie.listeDesCoups.addCoup(this);
+            if (this.origine.slice(0, 3) == "COL") {
+                let colonneOrigine = this.origine.slice(3, 4);
+                carteJouee = partie.getColonne(colonneOrigine).prendCarte();
+                console.log("Carte jouée : " + carteJouee);
+            }
+            if (this.origine.slice(0, 3) == "CEL") {
+                let celluleOrigine = this.origine.slice(3, 4);
+                carteJouee = partie.getCaseLibre(celluleOrigine).prendCarte();
+                console.log("Carte jouée : " + carteJouee);
+            }
+            if (this.destination.slice(0, 3) == "COL") {
+                let colonneDestination = this.destination.slice(3, 4);
+                partie.getColonne(colonneDestination).ajouteCarte(carteJouee);
+                console.log("Carte posée sur la colonne " + colonneDestination);
+            }
+            if (this.destination.slice(0, 3) == "CEL") {
+                let celluleDestination = this.destination.slice(3, 4);
+                partie.getCaseLibre(celluleDestination).poseCarte(carteJouee);
+            }
+            if (this.destination.slice(0, 3) == "PIL") {
+                let pileDestination = this.destination.slice(3, 4);
+                partie.getPile(pileDestination).ajouteCarte(carteJouee);
+            }
+
+            partie.verifieVictoire();
+        }
+    }
     annuler(partie) {
         let carte;
 
@@ -169,36 +202,4 @@ class Coup {
         }
     }
 
-    jouer(partie) {
-        if (this.coupValable(partie)) {
-            let carteJouee = null;
-            partie.listeDesCoups.addCoup(this);
-            console.log("Coup joué : carte " + this.carte + " de " + this.getOrigine() + " vers " + this.getDestination());
-            if (this.origine.slice(0, 3) == "COL") {
-                let colonneOrigine = this.origine.slice(3, 4);
-                carteJouee = partie.getColonne(colonneOrigine).prendCarte();
-                console.log("Carte jouée : " + carteJouee);
-            }
-            if (this.origine.slice(0, 3) == "CEL") {
-                let celluleOrigine = this.origine.slice(3, 4);
-                carteJouee = partie.getCaseLibre(celluleOrigine).prendCarte();
-                console.log("Carte jouée : " + carteJouee);
-            }
-            if (this.destination.slice(0, 3) == "COL") {
-                let colonneDestination = this.destination.slice(3, 4);
-                partie.getColonne(colonneDestination).ajouteCarte(carteJouee);
-                console.log("Carte posée sur la colonne " + colonneDestination);
-            }
-            if (this.destination.slice(0, 3) == "CEL") {
-                let celluleDestination = this.destination.slice(3, 4);
-                partie.getCaseLibre(celluleDestination).poseCarte(carteJouee);
-            }
-            if (this.destination.slice(0, 3) == "PIL") {
-                let pileDestination = this.destination.slice(3, 4);
-                partie.getPile(pileDestination).ajouteCarte(carteJouee);
-            }
-
-            partie.verifieVictoire();
-        }
-    }
 }

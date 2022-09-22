@@ -15,7 +15,7 @@
     <canvas id="canvasColonne" width="800" height="500" style="border:1px solid #000000;" onclick="partie.onClickColonne()">
     </canvas>
 
-    <button id="btnNouvellePartie" onclick="partie.nouvellePartie()">Nouvelle partie</button>
+    <button id="btnNouvellePartie">Nouvelle partie</button>
     <button id="btnArriere" onclick="partie.arriere()">Arrière</button>
     <button id="button-verifier"> 🔎 Vérifier faisabilité</button>
     <button id="button-aide-raz" onclick="razAide()">⚐ R.A.Z Aide</button>
@@ -24,19 +24,18 @@
 
     <button id="button-sudoku-vers-texte" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button>
     <textarea cols="9" id="zonetextesudoku" name="saisie" rows="9">VK AT DP RC 1K</textarea>
-    <button id="button-texte-vers-sudoku" onclick="texteVersSudoku()">Texte vers Freecell 📤 </button>
-    <script src="jquery.min.js"></script>
-    <script src="carte.js"></script>
-    <script src="caseLibre.js"></script>
-    <script src="pileDeCartes.js"></script>
-    <script src="jeuDeCartes.js"></script>
-    <script src="testcarte.js"></script>
-    <script src="interface.js"></script>
-    <script src="pileDeCouleur.js"></script>
-    <script src="coup.js"></script>
-    <script src="listeCoups.js"></script>
-    <script src="partie.js"></script>
-
+    <button id="button-texte-vers-sudoku" onclick="texteVersFreecell()">Texte vers Freecell 📤 </button>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/carte.js"></script>
+    <script src="js/caseLibre.js"></script>
+    <script src="js/pileDeCartes.js"></script>
+    <script src="js/jeuDeCartes.js"></script>
+    <script src="js/testcarte.js"></script>
+    <script src="js/pileDeCouleur.js"></script>
+    <script src="js/coup.js"></script>
+    <script src="js/listeCoups.js"></script>
+    <script src="js/partie.js"></script>
+    <script src="js/interface.js"></script>
 </body>
 
 </html>
