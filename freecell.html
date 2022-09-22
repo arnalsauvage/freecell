@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+    <title>📕 FreeCell</title>
+</head>
+
+<body>
+    <h1>FreeCell 📕 </h1>
+
+    <canvas id="canvasCaseLibre" width="450" height="200" style="border:1px solid #000000;" onclick="partie.onClickCaseLibre()"></canvas>
+    <canvas id="canvasPile" width="450" height="200" style="border:1px solid #000000;" onclick="partie.onClickPile()"></canvas>
+    <canvas id="canvasColonne" width="800" height="500" style="border:1px solid #000000;" onclick="partie.onClickColonne()">
+    </canvas>
+
+    <button id="btnNouvellePartie" onclick="partie.nouvellePartie()">Nouvelle partie</button>
+    <button id="btnArriere" onclick="partie.arriere()">Arrière</button>
+    <button id="button-verifier"> 🔎 Vérifier faisabilité</button>
+    <button id="button-aide-raz" onclick="razAide()">⚐ R.A.Z Aide</button>
+    <button id="button-aide-candidatsUniques" onclick="montreLesCandidatsUniques()"> ▦ Cartes libres</button>
+
+
+    <button id="button-sudoku-vers-texte" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button>
+    <textarea cols="9" id="zonetextesudoku" name="saisie" rows="9">VK AT DP RC 1K</textarea>
+    <button id="button-texte-vers-sudoku" onclick="texteVersSudoku()">Texte vers Freecell 📤 </button>
+    <script src="jquery.min.js"></script>
+    <script src="carte.js"></script>
+    <script src="caseLibre.js"></script>
+    <script src="pileDeCartes.js"></script>
+    <script src="jeuDeCartes.js"></script>
+    <script src="testcarte.js"></script>
+    <script src="interface.js"></script>
+    <script src="pileDeCouleur.js"></script>
+    <script src="coup.js"></script>
+    <script src="listeCoups.js"></script>
+    <script src="partie.js"></script>
+
+</body>
+
+</html>

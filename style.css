@@ -1,0 +1,87 @@
+* {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    border: 0;
+    border-spacing: 0;
+    box-sizing: border-box;
+    background: #000065;
+}
+
+button {
+    display: inline;
+    margin: 1em auto 0;
+    padding: 0.5em 2em;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px #aaa;
+    font-size: 3vh;
+    color: blue;
+    background-color: yellow;
+}
+
+.candidatsMultiples {
+    font-size: 2vh;
+}
+
+.candidatUnique {
+    background-color: greenyellow;
+}
+
+.cote {
+    width: 200px;
+}
+
+.focus {
+    background-color: yellowgreen;
+}
+
+h1 {
+    color : white;
+    font-size: 4vh;
+}
+
+.injouable {
+    background-color: #eed3d3;
+}
+
+input {
+    height: calc(60vh / 10);
+    width: calc(60vh / 10);
+    background-color: #efefef;
+    -moz-appearance: textfield;
+    font-size: 6vh;
+    text-align: center;
+}
+
+input:invalid,
+.invalid {
+    border: 1px solid red;
+    background-color: #eeF3F3;
+}
+
+table {
+    margin: 0 auto;
+}
+
+td {
+    border-right: 1px solid #999;
+}
+
+td:nth-of-type(3),
+td:nth-of-type(6) {
+    border-right: 3px solid #000;
+}
+
+textarea {
+    background: white;
+}
+
+tr {
+    border-bottom: 1px solid #999;
+    display: block;
+}
+
+tr:nth-of-type(3),
+tr:nth-of-type(6) {
+    border-bottom: 3px solid #000;
+}
