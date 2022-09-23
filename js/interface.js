@@ -8,6 +8,13 @@ function demarrePartie() {
     partie.demarrePartie();
 }
 
+function chercheCarte() {
+    let txt = document.getElementById("chercheCarte").value;
+    let carte = new Carte(txt.slice(0, 1), txt.slice(1, txt.length));
+    partie.chercheCarte(carte);
+    partie.metEnSurbrillance(carte);
+}
+
 
 // Récupérer le bouton
 const button = document.getElementById("btnNouvellePartie");

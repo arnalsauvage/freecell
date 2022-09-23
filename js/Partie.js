@@ -81,9 +81,11 @@ class Partie {
         let canvas = document.getElementById(id);
         let context = canvas.getContext("2d");
         // bord de la carte
-        context.strokeStyle = "black";
-        context.strokeRect(x, y, 100, 150);
-        console.log("affichage bord de la carte");
+        if (!surbrillance) {
+            context.strokeStyle = "black";
+            context.strokeRect(x, y, 100, 150);
+            console.log("affichage bord de la carte");
+        }
         // couleur de fond
         if (surbrillance) {
             context.fillStyle = "yellow";
@@ -93,7 +95,12 @@ class Partie {
         if (carte.valeur == 0) {
             context.fillStyle = "lightgrey";
         }
-        context.fillRect(x, y, 100, 150);
+        if (surbrillance) {
+            context.fillRect(x, y, 100, 30);
+
+        } else {
+            context.fillRect(x, y, 100, 150);
+        }
 
         // texte de la carte
         console.log("dessine carte : " + carte.valeur + "-" + carte.couleur);
@@ -104,8 +111,6 @@ class Partie {
         }
         context.font = "30px Arial";
         context.fillText(carte.getNomCourt(), x + 5, y + 24);
-
-
     }
 
     dessineColonne(numero) {
@@ -160,15 +165,27 @@ class Partie {
     onClickColonne() {
         // get x y of mouse
         let x = event.clientX;
-        let y = event.clientY;
+        let y = event.clientY - document.getElementById("canvasColonne").offsetTop;
+        console.log("click x = " + x + " y = " + y);
+        // get the column number
         let numeroColonne = Math.floor(x / 100) + 1;
+
+        // get the card number
+        let numeroCarte = Math.floor(y / 30) + 1;
+        let clicMagique = false;
+        if (numeroCarte > this.getColonne(numeroColonne).getNbCartes()) {
+            numeroCarte = this.getColonne(numeroColonne).getNbCartes();
+            clicMagique = true;
+        }
+
+        console.log("click sur colonne " + numeroColonne + " carte " + numeroCarte);
         let colonne = this.getColonne(numeroColonne);
-        let carte = colonne.getCarte(colonne.getNbCartes() - 1);
+        let carte = colonne.getCarteN(numeroCarte - 1);
         if (this.coup.carte == null) {
             this.coup.carte = carte;
             this.coup.origine = "COL" + numeroColonne;
             let x = (numeroColonne - 1) * 100;
-            let y = (colonne.getNbCartes() - 1) * 30;
+            let y = (numeroCarte - 1) * 30;
             this.dessineCarte(carte, x, y, "Colonne", true);
             console.log("x : " + x + " y : " + y);
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
@@ -177,9 +194,6 @@ class Partie {
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
             this.coup.jouer(this);
             this.coup = new Coup();
-            this.coup.carte = null;
-            this.coup.origine = null;
-            this.coup.destination = null;
             this.affiche();
         }
     }
@@ -199,7 +213,10 @@ class Partie {
             let x = (numeroPile - 1) * 100;
             let y = 0;
             this.dessineCarte(carte, x, y, "Pile", true);
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
+            let carteDescendant = new Carte(carte.valeur, carte.couleur);
+            carteDescendant.valeur += 1;
+            this.metEnSurbrillance(carteDescendant);
+
         } else {
             this.coup.destination = "PIL" + numeroPile;
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
@@ -283,5 +300,98 @@ class Partie {
     demarrePartie() {
         this.distribue();
         this.affiche();
+    }
+
+    // On compte les cases libres piles et colonnes
+    compteCasesLibres() {
+        let nbCasesLibres = 0;
+        for (let i = 1; i <= 4; i++) {
+            let caseLibre = this.getCaseLibre(i);
+            if (caseLibre.getCarte() == null) {
+                nbCasesLibres++;
+            }
+        }
+
+        for (let i = 1; i <= 8; i++) {
+            let colonne = this.getColonne(i);
+            if (colonne.getNbCartes() == 0) {
+                nbCasesLibres++;
+            }
+        }
+        return nbCasesLibres;
+    }
+
+    chercheCarte(carte) {
+        console.log("--- chercheCarte  " + carte.getNom());
+        let trouve = false;
+        let i = 1;
+        let j = 1;
+        while (!trouve && i <= 8) {
+            let colonne = this.getColonne(i);
+            j = 0;
+            while (!trouve && j < colonne.getNbCartes()) {
+                if (colonne.getCarteN(j).isEquivalent(carte)) {
+
+                    trouve = true;
+                }
+                j++;
+            }
+            i++;
+        }
+        if (trouve) {
+            console.log("Trouvé COL" + (i - 1) + " " + (j));
+            return "COL" + (i - 1) + (j);
+        }
+
+        i = 1;
+        while (!trouve && i <= 4) {
+            let pile = this.getPile(i);
+            if (pile.getCarte() === carte) {
+                trouve = true;
+            }
+            i++;
+        }
+        if (trouve) {
+            return "PIL" + i;
+        }
+
+        i = 1;
+        while (!trouve && i <= 4) {
+            let caseLibre = this.getCaseLibre(i);
+            if (caseLibre.getCarte() === carte) {
+                trouve = true;
+            }
+            i++;
+        }
+        if (trouve) {
+            return "CEL" + i;
+        } else {
+            return null;
+        }
+    }
+
+    metEnSurbrillance(carte) {
+        let id = this.chercheCarte(carte);
+        if (id == null) {
+            return;
+        }
+        if (id.startsWith("COL")) {
+            console.log("metEnSurbrillance " + id);
+            let numeroColonne = id.substring(3, 4);
+            let numeroCarte = id.substring(4, 5);
+            let x = (numeroColonne - 1) * 100;
+            let y = (numeroCarte - 1) * 30;
+            this.dessineCarte(carte, x, y, "Colonne", true);
+        } else if (id.startsWith("PIL")) {
+            let numeroPile = id.substring(3, 4);
+            let x = (numeroPile - 1) * 100;
+            let y = 0;
+            this.dessineCarte(carte, x, y, "Pile", true);
+        } else if (id.startsWith("CEL")) {
+            let numeroCaseLibre = id.substring(3, 4);
+            let x = (numeroCaseLibre - 1) * 100;
+            let y = 0;
+            this.dessineCarte(carte, x, y, "CaseLibre", true);
+        }
     }
 }

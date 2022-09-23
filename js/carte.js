@@ -3,10 +3,11 @@ class Carte {
     constructor(valeur, couleur) {
         this.setValeur(valeur);
         this.setCouleur(couleur);
-        this.log = 4; // 1 : debug , 2: info, 3 : warning , 4 : error
+        this.log = 1; // 1 : debug , 2: info, 3 : warning , 4 : error
     }
 
     setValeur(maValeur) {
+        maValeur = parseInt(maValeur);
         if ((maValeur > 0) && (maValeur < 14)) {
             this.valeur = maValeur;
             if (this.log == 1)
@@ -19,6 +20,14 @@ class Carte {
 
     getValeur() {
         return this.valeur;
+    }
+
+    isEquivalent(carte) {
+        if (this.valeur == carte.valeur && this.couleur == carte.couleur) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     setCouleur(maCouleur) {
