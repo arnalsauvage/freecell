@@ -166,13 +166,10 @@ class Partie {
         let pile = null;
         for (let i = 1; i <= 4; i++) {
             pile = this.getPile(i);
-
-
             if (pile.getCouleur() == carte.couleur) {
                 console.log("pile de couleur " + carte.couleur + " trouvee");
                 return i;
             }
-
         }
         console.log("pas de pile de couleur " + carte.couleur);
         return null;
@@ -190,11 +187,10 @@ class Partie {
         // get the card number
         let numeroCarte = Math.floor(y / 30) + 1;
         let clicMagique = false;
-        if (numeroCarte > this.getColonne(numeroColonne).getNbCartes()) {
+        if (numeroCarte > this.getColonne(numeroColonne).getNbCartes() && this.getColonne(numeroColonne).getNbCartes() > 0) {
             numeroCarte = this.getColonne(numeroColonne).getNbCartes();
             clicMagique = true;
         }
-
 
         console.log("click sur colonne " + numeroColonne + " carte " + numeroCarte);
         let colonne = this.getColonne(numeroColonne);
@@ -215,7 +211,7 @@ class Partie {
                 }
             } else
             // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
-            if (carte.valeur == this.getPile(indexMaPile).getCarte().valeur + 1) {
+            if (carte.valeur != this.getPile(indexMaPile).getCarte().valeur + 1) {
                 clickMagiqueOk = false;
             }
             if (clickMagiqueOk) {
@@ -277,9 +273,15 @@ class Partie {
             this.coup.origine = "PIL" + numeroPile;
             let x = (numeroPile - 1) * 100;
             let y = 0;
-            this.dessineCarte(carte, x, y, "Pile", true);
-            let carteDescendant = new Carte(carte.valeur, carte.couleur);
-            carteDescendant.valeur += 1;
+            let carteDescendant;
+            if (carte == null) {
+                console.log("carte null ! 1");
+                carteDescendant = new Carte(1, pile.getCouleur());
+            } else {
+                this.dessineCarte(carte, x, y, "Pile", true);
+                carteDescendant = new Carte(carte.valeur, carte.couleur);
+                carteDescendant.valeur += 1;
+            }
             this.metEnSurbrillance(carteDescendant);
 
         } else {

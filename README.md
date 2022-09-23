@@ -3,12 +3,10 @@
 ce jeu de freecell propose des aides graphiques à la résolution
 
 ## Todo 
-
 - Permettre de déplacer plusieurs cartes d'un coup
     - compter le nombre de cases libres (colonne + freecell
     - détecter un clic sur une carte 'en dessous')
     - mettre en surbrillance une carte en dessous
-- clic sur une carte lance la remontée vers la pile si possible ou autre colonne
 - faire le drag'n drop
 
 ## Done
@@ -26,6 +24,7 @@ ce jeu de freecell propose des aides graphiques à la résolution
 - mettre en surbrillance la carte sélectionnée dans les freecells et la pile
 - Permettre l'annulation de coup
 - mettre un écran "CONGLATURATION" quand le 4è Roi est posé
+- clic sur une carte lance la remontée vers la pile si possible ou autre colonne
 
 
 ## Carte.js
