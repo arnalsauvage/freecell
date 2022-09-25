@@ -93,16 +93,21 @@ class Partie {
 
         // texte de la carte
         if (this.log <= 1) {
-            console.log("dessine carte : " + carte.valeur + "-" + carte.couleur);
+            if (carte == null)
+                console.log("dessine carte : null");
+            else
+                console.log("dessine carte : " + carte.valeur + "-" + carte.couleur);
         }
-        if (carte.estRouge()) {
+        if (carte != null && carte.estRouge()) {
             context.fillStyle = "red";
         } else {
             context.fillStyle = "black";
         }
         context.font = "" + this.carteHauteurTete + "px Arial";
-        context.fillText(carte.getNomCourtFigure(), x + 5, y + this.carteHauteurTete - 5);
-        context.fillText(carte.getIconeCouleur(), x + this.carteLargeur - 25, y + this.carteHauteurTete - 5);
+        if (carte != null && carte.valeur != 0) {
+            context.fillText(carte.getNomCourtFigure(), x + 5, y + this.carteHauteurTete - 5);
+            context.fillText(carte.getIconeCouleur(), x + this.carteLargeur - 25, y + this.carteHauteurTete - 5);
+        }
     }
 
     dessineFondDeCarte(context, carte, x, y, surbrillance) {
@@ -111,7 +116,7 @@ class Partie {
         } else {
             context.fillStyle = "white";
         }
-        if (carte.valeur == 0) {
+        if (carte == null || carte.valeur == 0) {
             context.fillStyle = "lightgrey";
         }
         if (surbrillance) {
@@ -183,6 +188,7 @@ class Partie {
         }
     }
 
+    // trouve la pile de la meme couleur que la carte
     getPileCouleurCarte(carte) {
         let pile = null;
         for (let i = 1; i <= 4; i++) {
@@ -198,70 +204,54 @@ class Partie {
 
     onClickColonne() {
         // get x y of mouse
-        let x = event.clientX;
+        let x = event.clientX - document.getElementById("canvasColonne").offsetLeft;
         let y = event.clientY - document.getElementById("canvasColonne").offsetTop;
         console.log("click x = " + x + " y = " + y);
+
         // get the column number
         let numeroColonne = Math.floor(x / this.carteLargeur) + 1;
 
         // get the card number
         let numeroCarte = Math.floor(y / this.carteHauteurTete) + 1;
+        console.log("click sur colonne " + numeroColonne + " carte " + numeroCarte);
+
+        // détermine si le clic est magique : si on clique plus bas que l'en-tête de la dernière carte
         let clicMagique = false;
         if (numeroCarte > this.getColonne(numeroColonne).getNbCartes() && this.getColonne(numeroColonne).getNbCartes() > 0) {
             numeroCarte = this.getColonne(numeroColonne).getNbCartes();
             clicMagique = true;
         }
 
-        console.log("click sur colonne " + numeroColonne + " carte " + numeroCarte);
+        // get the card
         let colonne = this.getColonne(numeroColonne);
         let carte = colonne.getCarteN(numeroCarte - 1);
+        if (carte == null) {
+            console.log("carte null");
+        } else {
+            console.log("---- carte : " + carte.getNom() + carte.valeur + " " + carte.couleur);
+        }
         if (clicMagique) {
             console.log("click magique sur colonne " + numeroColonne + " carte " + numeroCarte);
-            // si la carte peut être montée dans la pile, on l'envoie
+            let clickMagiqueOk = this.cartePeutMonterDansLaPile(carte);
             let indexMaPile = this.getPileCouleurCarte(carte);
-            let clickMagiqueOk = true;
-            // Si on n'a pas l'index de la pile, c'est loupé !
-            if (indexMaPile == null) {
-                clickMagiqueOk = false;
-            }
-            // Si la pile est vide, et qu'on n'a pas un as, c'est loupé !
-            if (this.getPile(indexMaPile).getNbCartes() == 0) {
-                if (carte.valeur != 1) {
-                    clickMagiqueOk = false;
-                }
-            } else
-            // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
-            if (carte.valeur != this.getPile(indexMaPile).getCarte().valeur + 1) {
-                clickMagiqueOk = false;
-            }
             if (clickMagiqueOk) {
-
                 this.coup.carte = carte;
                 this.coup.origine = "COL" + numeroColonne;
                 this.coup.destination = "PIL" + indexMaPile;
-                console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
-                this.coup.jouer(this);
-                this.affiche();
-                return;
+                console.log("Montée de colonne vers pile ok !");
             } else {
                 // on tente de déplacer une carte de la colonne vers une autre colonne
-                for (let i = 1; i <= 7; i++) {
-                    if (i != numeroColonne) {
-                        let colonne2 = this.getColonne(i);
-                        if (carte.peutPoserSur(colonne2.getCarte())) {
-                            this.coup.carte = carte;
-                            this.coup.origine = "COL" + numeroColonne;
-                            this.coup.destination = "COL" + i;
-                            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
-                            this.coup.jouer(this);
-                            this.affiche();
-                            return;
-                        }
-                    }
-                }
+                let colonne = this.cartePeutMonterSurUneColonne(carte);
+                if (colonne > 0) {
+                    this.coup.carte = carte;
+                    this.coup.origine = "COL" + numeroColonne;
+                    this.coup.destination = "COL" + colonne;
+                    console.log("Montée de colonne vers colonne ok !");
+                };
             }
         }
 
+        // Cas du premier clic
         if (this.coup.carte == null) {
             this.coup.carte = carte;
             this.coup.origine = "COL" + numeroColonne;
@@ -269,22 +259,58 @@ class Partie {
             let y = (numeroCarte - 1) * this.carteHauteurTete;
             this.dessineCarte(carte, x, y, "Colonne", true);
             console.log("x : " + x + " y : " + y);
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
+            console.log("Premier clic, coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
         } else {
-            this.coup.destination = "COL" + numeroColonne;
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
+            // Cas du second clic
+            if (this.coup.destination == null || this.coup.destination == "") {
+                this.coup.destination = "COL" + numeroColonne;
+                console.log("Second clic, coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
+            }
             this.coup.jouer(this);
+            console.log("coup vers colonne, carte :  " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + " depuis " + this.coup.origine + " vers : " + this.coup.destination);
             this.coup = new Coup();
             this.affiche();
         }
     }
 
+    cartePeutMonterSurUneColonne(carte) {
+
+        console.log("carte peut monter sur une colonne ? " + carte.valeur + " " + carte.couleur);
+        for (let i = 1; i <= 8; i++) {
+            let colonne = this.getColonne(i);
+            if (colonne.getCarte() == null || carte.peutPoserSur(colonne.getCarte())) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    cartePeutMonterDansLaPile(carte) {
+        let indexMaPile = this.getPileCouleurCarte(carte);
+        let clickMagiqueOk = true;
+        // Si on n'a pas l'index de la pile, c'est loupé !
+        if (indexMaPile == null) {
+            clickMagiqueOk = false;
+        }
+        // Si la pile est vide, et qu'on n'a pas un as, c'est loupé !
+        if (this.getPile(indexMaPile).getNbCartes() == 0) {
+            if (carte.valeur != 1) {
+                clickMagiqueOk = false;
+            }
+        } else
+        // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
+        if (carte.valeur != this.getPile(indexMaPile).getCarte().valeur + 1) {
+            clickMagiqueOk = false;
+        }
+        return clickMagiqueOk;
+    }
+
     onClickPile() {
         // get x y of mouse
         let x = event.clientX;
-        x += 50;
-        let numeroPile = Math.floor(x / this.carteLargeur) - 4;
-        let y = event.clientY - document.getElementById("canvasColonne").offsetTop;
+        let numeroPile = Math.floor((x - document.getElementById("canvasPile").offsetLeft) / this.carteLargeur) + 1;
+        let y = event.clientY - document.getElementById("canvasPile").offsetTop;
+        console.log("click x = " + x + " y = " + y);
 
         let clicMagique = false;
         let numeroCarte = Math.floor(y / this.carteHauteurTete) + 1;
@@ -335,29 +361,61 @@ class Partie {
 
     onClickCaseLibre() {
         // get x y of mouse 
-        let x = event.clientX;
-        let y = event.clientY;
+        let x = event.clientX - document.getElementById("canvasCaseLibre").offsetLeft;
+        let y = event.clientY - document.getElementById("canvasCaseLibre").offsetTop;
         let numeroCaseLibre = Math.floor(x / this.carteLargeur) + 1;
         let caseLibre = this.getCaseLibre(numeroCaseLibre);
         let carte = caseLibre.getCarte();
-        // Si c'est le premier clic, on enregistre la carte à bouger
+        console.log("click x = " + x + " y = " + y);
+        console.log("click sur case libre  " + numeroCaseLibre + " carte " + carte);
+
+        let clickMagique = false;
+
+        if (y > this.carteHauteurTete && carte != null) {
+            clickMagique = true;
+            console.log("click magique sur case libre " + numeroCaseLibre + " carte " + carte);
+            let clickMagiqueOk = this.cartePeutMonterDansLaPile(carte);
+            let indexMaPile = this.getPileCouleurCarte(carte);
+            if (clickMagiqueOk) {
+                this.coup.carte = carte;
+                this.coup.origine = "CEL" + numeroCaseLibre;
+                this.coup.destination = "PIL" + indexMaPile;
+                console.log("Montée de case libre vers pile ok !");
+            } else {
+                // on tente de déplacer une carte de la colonne vers une autre colonne
+                let colonne = this.cartePeutMonterSurUneColonne(carte);
+                if (colonne > 0) {
+                    this.coup.carte = carte;
+                    this.coup.origine = "CEL" + numeroCaseLibre;
+                    this.coup.destination = "COL" + colonne;
+                    console.log("Descente de pile vers colonne ok !");
+                };
+            }
+        } else {
+            console.log("click normal sur case libre " + numeroCaseLibre + " carte " + carte);
+        }
+
+        // Si c'est le premier clic, on enregistre la carte à bouger, et on la met en surbrillance
         if (this.coup.carte == null) {
+            console.log("premier clic sur case libre " + numeroCaseLibre + " carte " + carte);
             this.coup.carte = carte;
             this.coup.origine = "CEL" + numeroCaseLibre;
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
+            if (carte != null) {
+                console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
+            }
             let x = (numeroCaseLibre - 1) * this.carteLargeur;
             let y = 0;
             this.dessineCarte(carte, x, y, "CaseLibre", true);
         }
         // Sinon, on enregistre la destination
         else {
-            this.coup.destination = "CEL" + numeroCaseLibre;
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
+            if (this.coup.destination == null || this.coup.destination == "") {
+                this.coup.destination = "CEL" + numeroCaseLibre;
+                console.log("destination enregistrée : " + "CEL" + numeroCaseLibre);
+            }
+            console.log("coup laché sur CEL carte : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + " origine :" + this.coup.origine + " destination : " + this.coup.destination);
             this.coup.jouer(this);
             this.coup = new Coup();
-            this.coup.carte = null;
-            this.coup.origine = null;
-            this.coup.destination = null;
             this.affiche();
         }
     }
