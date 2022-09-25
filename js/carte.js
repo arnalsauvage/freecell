@@ -170,6 +170,6 @@ class Carte {
     }
 
     getNomCourt() {
-        return "" + this.getNomCourtFigure() + "      " + this.getIconeCouleur();
+        return "" + this.getNomCourtFigure() + " " + this.getIconeCouleur();
     }
 }

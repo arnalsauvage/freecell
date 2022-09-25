@@ -4,7 +4,7 @@ ce jeu de freecell propose des aides graphiques à la résolution
 
 ## Todo 
 - Permettre de déplacer plusieurs cartes d'un coup
-    - compter le nombre de cases libres (colonne + freecell
+    - compter le nombre de cases libres (colonne + freecell)
     - détecter un clic sur une carte 'en dessous')
     - mettre en surbrillance une carte en dessous
 - faire le drag'n drop
