@@ -456,9 +456,9 @@ class Partie {
                     victoire = false;
                 }
             }
-            if (victoire) {
-                alert("Conglaturations :D !");
-            }
+        }
+        if (victoire) {
+            alert("Conglaturations :D !");
         }
     }
 
