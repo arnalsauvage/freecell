@@ -46,10 +46,28 @@ describe("Suite de tests Coup.js", function() {
         expect(monCoup.coupValable(maPartie)).toEqual(false);
     });
 
-    it("Test de la fonction prendCarte", function() {
-        maCaseLibre.poseCarte(maCarte);
-        expect(maCaseLibre.prendCarte()).toEqual(maCarte);
-        expect(maCaseLibre.getCarte()).toEqual(null);
+    it("Test de la fonction RecupCarteJouee", function() {
+        // TODO
+
+    });
+
+    it("Test de la fonction jouer(partie)", function () {
+        // Test COL vers COL
+        maCarte = new Carte(6, "K");
+        monCoup = new Coup(maCarte, "COL3", "COL1");
+        monCoup.jouer(maPartie);
+        expect(maPartie.getColonne(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+    });
+
+
+    it("Test de la fonction annuler(partie)", function () {
+        // Test COL vers COL
+        maCarte = new Carte(6, "K");
+        monCoup = new Coup(maCarte, "COL3", "COL1");
+        monCoup.jouer(maPartie);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(3).getCarte().isEquivalent(maCarte)).toEqual(true);
     });
 
 });
+

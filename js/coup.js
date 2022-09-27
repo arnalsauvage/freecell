@@ -92,16 +92,10 @@ class Coup {
 
     coupValable(partie) {
         let carteJouee = this.recupCarteJouee(partie);
-        if (carteJouee == null) {
-            console.log("Pas de carte à jouer");
-            return false;
-        }
-
-        let colonneDestination = null;
 
         // Si la destination est une colonne, on récupère la colonne visée
         if (this.destination.slice(0, 3) == "COL") {
-            colonneDestination = this.destination.slice(3, 4);
+            let colonneDestination = this.destination.slice(3, 4);
             let carteDestination = partie.getColonne(colonneDestination).getCarte();
 
             // Si la carte peut se poser sur l'autre carte, le coup est valide
@@ -144,20 +138,28 @@ class Coup {
     }
 
     recupCarteJouee(partie) {
-        let carteJouee = null;
+        let carteJouee = this.carte;
+        this.carte = null;
         if (this.origine.slice(0, 3) == "COL") {
             let colonneOrigine = this.origine.slice(3, 4);
-            carteJouee = partie.getColonne(colonneOrigine).getCarte();
-            this.carte = carteJouee;
-            console.log("Carte jouée : " + carteJouee.getNom() + "colonne " + colonneOrigine);
+            if (partie.getColonne(colonneOrigine).estVide()) {
+                console.log("Colonne vide");
+                return null;
+            }
+            if (partie.getColonne(colonneOrigine).contientCarte(carteJouee) ) {
+                this.carte = carteJouee;
+                }
+            console.debug("Carte jouée : " + carteJouee.getNom() + "colonne " + colonneOrigine);
         }
         if (this.origine.slice(0, 3) == "CEL") {
             let numeroCellule = this.origine.slice(3, 4);
             carteJouee = partie.getCaseLibre(numeroCellule).getCarte();
-            this.carte = carteJouee;
+            if (this.carte.isEquivalent( carteJouee)){
+                this.carte = carteJouee;
+            }
             console.log("Carte jouée : " + carteJouee.getNom() + "cellule " + numeroCellule);
         }
-        return carteJouee;
+        return this.carte;
     }
 
     jouer(partie) {
