@@ -1,6 +1,6 @@
 class Partie {
 
-    constructor(valeur, couleur) {
+    constructor() {
 
         this.coup = new Coup();
         this.listeDesCoups = new ListeCoups();
@@ -38,9 +38,11 @@ class Partie {
         this.log = 1; // 1 : debug , 2: info, 3 : warning , 4 : error
     }
 
-    distribue() {
+    distribue(melanger = true) {
         let jeu52cartes = new JeuDeCartes();
-        jeu52cartes.melanger();
+        if (melanger){
+            jeu52cartes.melanger();
+        }
         this.distribueColonne(jeu52cartes, this.colonne[1], 7);
         this.distribueColonne(jeu52cartes, this.colonne[2], 7);
         this.distribueColonne(jeu52cartes, this.colonne[3], 7);
@@ -172,7 +174,7 @@ class Partie {
         if (carte != null) {
             this.dessineCarte(carte, x, y, "CaseLibre");
         } else {
-            if (this.log = 1) {
+            if (this.log == 1) {
                 console.log("carte case libre " + numero + " vide");
             }
             let carteVide = new Carte(0, 0);
@@ -265,8 +267,8 @@ class Partie {
         if (this.coup.carte == null) {
             this.coup.carte = carte;
             this.coup.origine = "COL" + numeroColonne;
-            let x = (numeroColonne - 1) * this.carteLargeur;
-            let y = (numeroCarte - 1) * this.carteHauteurTete;
+            x = (numeroColonne - 1) * this.carteLargeur;
+            y = (numeroCarte - 1) * this.carteHauteurTete;
             this.dessineCarte(carte, x, y, "Colonne", true);
             console.log("x : " + x + " y : " + y);
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
@@ -299,7 +301,6 @@ class Partie {
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
             this.coup.jouer(this);
             this.affiche();
-            return;
         } else {
             console.log("numeroPile : " + numeroPile);
             let pile = this.getPile(numeroPile);
@@ -307,8 +308,8 @@ class Partie {
             if (this.coup.carte == null) {
                 this.coup.carte = carte;
                 this.coup.origine = "PIL" + numeroPile;
-                let x = (numeroPile - 1) * this.carteLargeur;
-                let y = 0;
+                x = (numeroPile - 1) * this.carteLargeur;
+                y = 0;
                 let carteDescendant;
                 if (carte == null) {
                     console.log("carte null ! 1");
@@ -345,8 +346,8 @@ class Partie {
             this.coup.carte = carte;
             this.coup.origine = "CEL" + numeroCaseLibre;
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
-            let x = (numeroCaseLibre - 1) * this.carteLargeur;
-            let y = 0;
+            x = (numeroCaseLibre - 1) * this.carteLargeur;
+            y = 0;
             this.dessineCarte(carte, x, y, "CaseLibre", true);
         }
         // Sinon, on enregistre la destination

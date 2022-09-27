@@ -4,7 +4,6 @@ class Coup {
         this.setCarte(carte);
         this.setOrigine(origine);
         this.setDestination(destination);
-        this.log = 4; // 1 : debug , 2: info, 3 : warning , 4 : error
     }
 
     setCarte(carte) {
@@ -17,49 +16,70 @@ class Coup {
 
     setOrigine(origine) {
         // COL pour colonne , CEL pour cellule, PIL pour Pile
-        this.origine = "";
-        if (this.origine.slice(0, 3) == "COL") {
-            let numcol = this.origine.slice(3, 4);
-            if (numcol > 0 && numcol < 9) {
-                this.origine = this.origine.slice(0, 4);
-            }
+
+        if (origine==null){
+            this.origine = "";
+            return;
         }
 
-        if (this.origine.slice(0, 3) == "CEL") {
-            let numcel = this.origine.slice(3, 4);
-            if (numcel > 0 && numcel < 5) {
-                this.origine = this.origine.slice(0, 4);
-            }
+        let trigramme = origine.slice(0, 3);
+        switch (trigramme){
+            case "COL":
+                let numcol = origine.slice(3, 4);
+                if (numcol > 0 && numcol < 9) {
+                    this.origine = origine.slice(0, 4);
+                }
+                break;
+            case "CEL":
+                let numcel = origine.slice(3, 4);
+                if (numcel > 0 && numcel < 5) {
+                    this.origine = origine.slice(0, 4);
+                }
+                break;
+            case "PIL":
+                let numpil = origine.slice(3, 4);
+                if (numpil > 0 && numpil < 5) {
+                    this.origine = origine.slice(0, 4);
+                }
+                break;
+            default:
+                this.origine = "";
+                break;
         }
+
     }
 
     setDestination(destination) {
-        // COL pour colonne , CEL pour cellule, PIL pour Pile   
-        this.destination = "";
-        if (this.destination.slice(0, 3) == "COL") {
-            let numcol = this.destination.slice(3, 4);
-            if (numcol > 0 && numcol < 9) {
-                this.destination = this.destination.slice(0, 4);
-                return true;
-            }
+        // COL pour colonne , CEL pour cellule, PIL pour Pile
+        if (destination==null){
+            this.destination = "";
+            return;
+        }
+        switch (destination.slice(0, 3)) {
+            case "COL":
+                let numcol = destination.slice(3, 4);
+                if (numcol > 0 && numcol < 9) {
+                    this.destination = destination.slice(0, 4);
+                }
+                break;
+            case "CEL":
+                let numcel = destination.slice(3, 4);
+                if (numcel > 0 && numcel < 5) {
+                    this.destination = destination.slice(0, 4);
+
+                }
+                break;
+            case "PIL":
+                let numpil = destination.slice(3, 4);
+                if (numpil > 0 && numpil < 5) {
+                    this.destination = destination.slice(0, 4);
+                }
+                break;
+            default:
+                this.destination = "";
+                break;
         }
 
-        if (this.destination.slice(0, 3) == "CEL") {
-            let numcel = this.destination.slice(3, 4);
-            if (numcel > 0 && numcel < 5) {
-                this.destination = this.destination.slice(0, 4);
-                return true;
-            }
-        }
-
-        if (this.destination.slice(0, 3) == "PIL") {
-            let numpil = this.destination.slice(3, 4);
-            if (numpil > 0 && numpil < 5) {
-                this.destination = this.destination.slice(0, 4);
-                return true;
-            }
-        }
-        return false;
     }
 
     getOrigine() {
@@ -168,13 +188,11 @@ class Coup {
                 let pileDestination = this.destination.slice(3, 4);
                 partie.getPile(pileDestination).ajouteCarte(carteJouee);
             }
-
             partie.verifieVictoire();
         }
     }
-    annuler(partie) {
-        let carte;
 
+    annuler(partie) {
         // Si la carte vient d'une colonne, on la remet dans la colonne
         if (this.destination.slice(0, 3) == "COL") {
             this.carte = partie.getColonne(this.destination.slice(3, 4)).prendCarte();
@@ -187,7 +205,6 @@ class Coup {
         if (this.destination.slice(0, 3) == "PIL") {
             this.carte = partie.getPile(this.destination.slice(3, 4)).prendCarte();
         }
-
         // Si la carte vient d'une colonne, on la remet dans la colonne
         if (this.origine.slice(0, 3) == "COL") {
             partie.getColonne(this.origine.slice(3, 4)).ajouteCarte(this.carte);
