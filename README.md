@@ -51,3 +51,8 @@ donne le nom de la vauer de la carte
 - getNomCouleur :
 donne le nom de la couleur de la carte (pique coeur carreau trefle)
 
+## Framework de test Jasmine
+
+npx jasmine-browser-runner serve
+
+

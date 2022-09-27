@@ -16,7 +16,7 @@
     <canvas id="canvasColonne" width="800" height="500" style="border:1px solid #000000;" onclick="partie.onClickColonne()">
     </canvas>
 
-    <input type="text" id="chercheCarte" placeholder="Cherche carte" onkeyup="chercheCarte()">
+    <label for="chercheCarte">Cherche :</label><input type="text" id="chercheCarte" placeholder="Cherche carte" onkeyup="chercheCarte()">
 
     <button id="btnNouvellePartie">Nouvelle partie</button>
     <button id="btnArriere" onclick="partie.arriere()">Arrière</button>
@@ -25,7 +25,8 @@
     <button id="button-aide-candidatsUniques" onclick="montreLesCandidatsUniques()"> ▦ Cartes libres</button>
 
 
-    <button id="button-sudoku-vers-texte" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button>
+
+    <label for="zonetextesudoku"> <button id="button-sudoku-vers-texte" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button></label>
     <textarea cols="9" id="zonetextesudoku" name="saisie" rows="9">VK AT DP RC 1K</textarea>
     <button id="button-texte-vers-sudoku" onclick="texteVersFreecell()">Texte vers Freecell 📤 </button>
     <script src="js/jquery.min.js"></script>
@@ -37,8 +38,8 @@
     <script src="js/pileDeCouleur.js"></script>
     <script src="js/coup.js"></script>
     <script src="js/listeCoups.js"></script>
-    <script src="js/partie.js"></script>
-    <script src="js/interface.js"></script>
+    <script src="js/Partie.js"></script>
+    <script src="interface.js"></script>
 </body>
 
 </html>

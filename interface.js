@@ -1,4 +1,4 @@
-// Récupérer le bouton aide 1
+
 const button1 = document.getElementById("button-aide-1");
 let partie = new Partie();
 partie.demarrePartie();

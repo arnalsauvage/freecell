@@ -10,7 +10,7 @@ class Carte {
         maValeur = parseInt(maValeur);
         if ((maValeur > 0) && (maValeur < 14)) {
             this.valeur = maValeur;
-            if (this.log == 1)
+            if (this.log === 1)
                 console.log("Valeur " + maValeur + " initialisée");
         } else {
             if (this.log <= 4)
@@ -23,22 +23,13 @@ class Carte {
     }
 
     isEquivalent(carte) {
-        if (this.valeur == carte.valeur && this.couleur == carte.couleur) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.valeur === carte.valeur && this.couleur === carte.couleur;
     }
 
     setCouleur(maCouleur) {
         let couleursPermises = "CPKT";
         if (couleursPermises.includes(maCouleur)) {
             this.couleur = maCouleur;
-            if (this.log == 1)
-                console.log("Couleur " + maCouleur + " initialisée");
-        } else {
-            if (this.log <= 4)
-                console.log("Erreur, couleur " + maCouleur + " non autorisée");
         }
     }
 
@@ -148,11 +139,11 @@ class Carte {
     }
 
     estRouge() {
-        return (this.couleur == "K" || this.couleur == "C");
+        return (this.couleur === "K" || this.couleur === "C");
     }
 
     estNoir() {
-        return (this.couleur == "P" || this.couleur == "T");
+        return (this.couleur === "P" || this.couleur === "T");
     }
 
     peutPoserSur(autreCarte) {
@@ -160,9 +151,9 @@ class Carte {
             return true;
         }
         // Si valeur autre carte = maValeur + 1 
-        if (this.valeur != autreCarte.valeur - 1)
+        if (this.valeur !== autreCarte.valeur - 1)
             return false;
-        return this.estNoir() != autreCarte.estNoir();
+        return this.estNoir() !== autreCarte.estNoir();
     }
 
     getNom() {
