@@ -143,7 +143,8 @@ class Partie {
         let x = 0 + (numero - 1) * this.carteLargeur;
         let y = 0;
         for (let i = 0; i < colonne.getNbCartes(); i++) {
-            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne");
+            let cliquable = this.isCarteCliquable(colonne.getCarteN(i), colonne);
+            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", cliquable);
             y += this.carteHauteurTete;
         }
     }
@@ -200,6 +201,39 @@ class Partie {
         }
         console.log("pas de pile de couleur " + carte.couleur);
         return null;
+    }
+
+    isCarteCliquable(carteAjuger, pile) {
+        let isCarteCliquable = false;
+        if (carteAjuger == null) {
+            return false;
+
+        } else if (pile == null) {
+            return false;
+        }
+        // parcourir toutes les cartes depuis le bas
+        let cartePile = pile.getCarte();
+        if (carteAjuger.isEquivalent(cartePile)) {
+            isCarteCliquable = true;
+        }
+        let numCarteExaminee = 1;
+        while (cartePile != null && !cartePile.isEquivalent(carteAjuger)) {
+            let carteDuDessous = pile.getCarteN(pile.length - numCarteExaminee);
+            if (cartePile.peutPoserSur(carteDuDessous))
+                cartePile = pile.getCarteN(pile.length - numCarteExaminee);
+            else
+                break;
+
+
+            numCarteExaminee++;
+            if (cartePile == null) {
+                break;
+            }
+            if (carteAjuger.isEquivalent(cartePile)) {
+                isCarteCliquable = true;
+            }
+        }
+        return isCarteCliquable;
     }
 
     onClickColonne() {
@@ -310,52 +344,61 @@ class Partie {
         let x = event.clientX;
         let numeroPile = Math.floor((x - document.getElementById("canvasPile").offsetLeft) / this.carteLargeur) + 1;
         let y = event.clientY - document.getElementById("canvasPile").offsetTop;
-        console.log("click x = " + x + " y = " + y);
+        console.info("click x = " + x + " y = " + y);
+        console.log("numeroPile : " + numeroPile);
+        let pile = this.getPile(numeroPile);
+        let carte = pile.getCarte();
 
         let clicMagique = false;
         let numeroCarte = Math.floor(y / this.carteHauteurTete) + 1;
         if (numeroCarte > 1) {
             clicMagique = true;
         }
-        if (clicMagique) {
 
-            this.coup.carte = carte;
-            this.coup.origine = "PIL" + numeroPile;
-            this.coup.destination = "PIL" + indexMaPile;
-            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
-            this.coup.jouer(this);
-            this.affiche();
-            return;
+        if (clicMagique) {
+            if (carte != null) {
+                this.coup.carte = carte;
+                this.coup.origine = "PIL" + numeroPile;
+                this.coup.destination = "PIL" + indexMaPile;
+                console.info("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
+            }
         } else {
-            console.log("numeroPile : " + numeroPile);
-            let pile = this.getPile(numeroPile);
-            let carte = pile.getCarte();
+            // Si c'est un premier clic, on met en surbrillance la carte
             if (this.coup.carte == null) {
                 this.coup.carte = carte;
                 this.coup.origine = "PIL" + numeroPile;
-                let x = (numeroPile - 1) * this.carteLargeur;
-                let y = 0;
-                let carteDescendant;
-                if (carte == null) {
-                    console.log("carte null ! 1");
-                    carteDescendant = new Carte(1, pile.getCouleur());
-                } else {
-                    this.dessineCarte(carte, x, y, "Pile", true);
-                    carteDescendant = new Carte(carte.valeur, carte.couleur);
-                    carteDescendant.valeur += 1;
-                }
-                this.metEnSurbrillance(carteDescendant);
+                this.afficheCarteSuivantePile(numeroPile, carte);
+                return;
 
-            } else {
-                this.coup.destination = "PIL" + numeroPile;
-                console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
-                this.coup.jouer(this);
-                this.coup = new Coup();
-                this.coup.carte = null;
-                this.coup.origine = null;
-                this.coup.destination = null;
-                this.affiche();
             }
+            this.coup.destination = "PIL" + numeroPile;
+            console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
+        }
+        this.coup.jouer(this);
+        this.coup = new Coup();
+        this.affiche();
+    }
+
+    afficheCarteSuivantePile(numeroPile) {
+        let x = (numeroPile - 1) * this.carteLargeur;
+        let y = 0;
+        let carteDescendant;
+        let pile = this.getPile(numeroPile);
+        let carte = pile.getCarte();
+        if (carte == null) {
+            console.info("carte null ! 1");
+            carteDescendant = new Carte(1, pile.getCouleur());
+        } else {
+            this.dessineCarte(carte, x, y, "Pile", true);
+            carteDescendant = new Carte(carte.valeur, carte.couleur);
+            carteDescendant.valeur += 1;
+        }
+        this.metEnSurbrillance(carteDescendant);
+    }
+
+    afficheCartesSuivantesPiles() {
+        for (let i = 1; i <= 4; i++) {
+            this.afficheCarteSuivantePile(i);
         }
     }
 
