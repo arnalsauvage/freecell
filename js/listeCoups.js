@@ -1,9 +1,7 @@
 class ListeCoups {
 
     constructor() {
-        this.listeCoups = new Array();
-
-        this.log = 4; // 1 : debug , 2: info, 3 : warning , 4 : error
+        this.listeCoups = [];
     }
 
     addCoup(coup) {
@@ -24,14 +22,6 @@ class ListeCoups {
 
     setListeCoups(listeCoups) {
         this.listeCoups = listeCoups;
-    }
-
-    setLog(log) {
-        this.log = log;
-    }
-
-    getLog() {
-        return this.log;
     }
 
     // retourne la liste des coups sous forme de chaine de caractères

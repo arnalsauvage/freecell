@@ -49,6 +49,20 @@ describe("Suite de tests Coup.js", function() {
     it("Test de la fonction RecupCarteJouee", function() {
         // TODO
 
+        // RECUPERE LA CARTE JOUEE DEPUIS COLONNE
+        maCarte = new Carte (6, "K");
+        monCoup = new Coup(maCarte,"COL3", "COL1");
+
+        let autreCarte = monCoup.recupCarteJouee(maPartie);
+        expect(autreCarte).toEqual(maCarte);
+
+        // RECUPERE LA CARTE JOUEE DEPUIS CASE LIBRE
+        maCarte = new Carte (7, "P");
+        monCoup = new Coup(maCarte,"COL7", "CEL1");
+        monCoup.jouer(maPartie);
+        monCoup = new Coup(maCarte,"CEL1", "COL7");
+        let autrecarte = monCoup.recupCarteJouee( maPartie);
+        expect(autrecarte).toEqual(maCarte);
     });
 
     it("Test de la fonction jouer(partie)", function () {
@@ -57,8 +71,9 @@ describe("Suite de tests Coup.js", function() {
         monCoup = new Coup(maCarte, "COL3", "COL1");
         monCoup.jouer(maPartie);
         expect(maPartie.getColonne(1).getCarte().isEquivalent(maCarte)).toEqual(true);
-    });
 
+        // TODO ==> traiter les 5 cas
+    });
 
     it("Test de la fonction annuler(partie)", function () {
         // Test COL vers COL
@@ -67,7 +82,70 @@ describe("Suite de tests Coup.js", function() {
         monCoup.jouer(maPartie);
         monCoup.annuler(maPartie);
         expect(maPartie.getColonne(3).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+        // Test COL vers CEL
+        monCoup = new Coup(maCarte, "COL3", "CEL1");
+        monCoup.jouer(maPartie);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(3).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+        // Test COL vers PIL
+        maCarte = new Carte (1, "P");
+        monCoup = new Coup(maCarte,"COL8", "PIL1");
+        monCoup.jouer(maPartie);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(8).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+            // Test CEL vers COL
+        maCarte = new Carte(6, "K");
+        monCoup = new Coup(maCarte, "COL3", "CEL1");
+        monCoup.jouer(maPartie);
+        expect(maPartie.getCaseLibre(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+        let monCoup2 = new Coup(maCarte, "CEL1", "COL1");
+        monCoup2.jouer(maPartie);
+        expect(maPartie.getColonne(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+        monCoup2.annuler(maPartie);
+        expect(maPartie.getCaseLibre(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(3).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+        // Test CEL vers CEL
+        maCarte = new Carte(6, "K");
+        monCoup = new Coup(maCarte, "COL3", "CEL1");
+        monCoup.jouer(maPartie);
+        monCoup2 = new Coup(maCarte, "CEL1", "CEL2");
+        monCoup2.jouer(maPartie);
+        monCoup2.annuler(maPartie);
+        expect(maPartie.getCaseLibre(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(3).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+        // Test CEL vers PIL
+        maCarte = new Carte (1, "P");
+        monCoup = new Coup(maCarte,"COL8", "PIL1");
+        monCoup.jouer(maPartie);
+        monCoup.annuler(maPartie);
+        expect(maPartie.getColonne(8).getCarte().isEquivalent(maCarte)).toEqual(true);
     });
 
+    it("Test de la fonction isEquivalent(coup)", function () {
+        // Test COL vers COL
+        maCarte = new Carte(6, "K");
+        monCoup = new Coup(maCarte, "COL3", "COL1");
+        let autreCoup = new Coup(maCarte, "COL3", "COL1");
+        expect(monCoup.isEquivalent(autreCoup)).toEqual(true);
+
+        autreCoup.setOrigine("COL2");
+        expect(monCoup.isEquivalent(autreCoup)).toEqual(false);
+
+        autreCoup.setOrigine("COL3");
+        autreCoup.setDestination("COL2");
+        expect(monCoup.isEquivalent(autreCoup)).toEqual(false);
+
+        autreCoup.setDestination("COL1");
+        autreCoup.setCarte(new Carte(7, "K"));
+        expect(monCoup.isEquivalent(autreCoup)).toEqual(false);
+
+    });
 });
 

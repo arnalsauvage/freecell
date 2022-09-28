@@ -1,18 +1,16 @@
 class PileDeCouleur extends PileDeCartes {
     constructor(couleur) {
         super();
-        // this.pileDeCartes = new Array(0);
-        // console.log("Longueur de la pile : " + this.pileDeCartes.length);
         this.couleur = couleur;
     }
 
     ajouteCarte(carte) {
-        if (carte.couleur != this.couleur) {
+        if (carte.couleur !== this.couleur) {
             console.log("La couleur de la carte n'est pas la même que la couleur de la pile");
             return false;
         }
         if (this.estVide()) {
-            if (carte.getValeur() == 1) {
+            if (carte.getValeur() === 1) {
                 super.ajouteCarte(carte);
                 return true;
             } else {
@@ -20,7 +18,7 @@ class PileDeCouleur extends PileDeCartes {
                 return false;
             }
         }
-        if (carte.getValeur() == super.getCarte().getValeur() + 1) {
+        if (carte.getValeur() === super.getCarte().getValeur() + 1) {
             super.ajouteCarte(carte);
             return true;
         } else {

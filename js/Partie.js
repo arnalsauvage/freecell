@@ -9,7 +9,7 @@ class Partie {
         this.carteHauteur = 150;
         this.carteHauteurTete = 30;
 
-        this.colonne = new Array();
+        this.colonne = [];
         this.colonne[1] = new PileDeCartes();
         this.colonne[2] = new PileDeCartes();
         this.colonne[3] = new PileDeCartes();
@@ -23,13 +23,13 @@ class Partie {
         this.pileDeTrefle = new PileDeCouleur("T");
         this.pileDeCoeur = new PileDeCouleur("C");
         this.pileDeCarreau = new PileDeCouleur("K");
-        this.pile = new Array();
+        this.pile = [];
         this.pile[1] = this.pileDePique;
         this.pile[2] = this.pileDeCoeur;
         this.pile[3] = this.pileDeCarreau;
         this.pile[4] = this.pileDeTrefle;
 
-        this.casesLibres = new Array();
+        this.casesLibres = [];
         this.casesLibres[1] = new CaseLibre();
         this.casesLibres[2] = new CaseLibre();
         this.casesLibres[3] = new CaseLibre();
@@ -106,7 +106,7 @@ class Partie {
             context.fillStyle = "black";
         }
         context.font = "" + this.carteHauteurTete + "px Arial";
-        if (carte != null && carte.valeur != 0) {
+        if (carte != null && carte.valeur !== 0) {
             context.fillText(carte.getNomCourtFigure(), x + 5, y + this.carteHauteurTete - 5);
             context.fillText(carte.getIconeCouleur(), x + this.carteLargeur - 25, y + this.carteHauteurTete - 5);
         }
@@ -118,7 +118,7 @@ class Partie {
         } else {
             context.fillStyle = "white";
         }
-        if (carte == null || carte.valeur == 0) {
+        if (carte == null || carte.valeur === 0) {
             context.fillStyle = "lightgrey";
         }
         if (surbrillance) {
@@ -142,7 +142,7 @@ class Partie {
     dessineColonne(numero) {
         let colonne = this.getColonne(numero);
         // draw the cards
-        let x = 0 + (numero - 1) * this.carteLargeur;
+        let x = (numero - 1) * this.carteLargeur;
         let y = 0;
         for (let i = 0; i < colonne.getNbCartes(); i++) {
             let cliquable = this.isCarteCliquable(colonne.getCarteN(i), colonne);
@@ -155,7 +155,7 @@ class Partie {
         let pile = this.getPile(numero);
 
         // draw the cards
-        let x = 0 + (numero - 1) * this.carteLargeur;
+        let x = (numero - 1) * this.carteLargeur;
         let y = 0;
 
         if (pile.getCarte() != null) {
@@ -174,13 +174,13 @@ class Partie {
         let caseLibre = this.getCaseLibre(numero);
 
         // draw the cards
-        let x = 0 + (numero - 1) * this.carteLargeur;
+        let x = (numero - 1) * this.carteLargeur;
         let y = 0;
         let carte = caseLibre.getCarte();
         if (carte != null) {
             this.dessineCarte(carte, x, y, "CaseLibre");
         } else {
-            if (this.log == 1) {
+            if (this.log === 1) {
                 console.log("carte case libre " + numero + " vide");
             }
             let carteVide = new Carte(0, 0);
@@ -196,7 +196,7 @@ class Partie {
         let pile = null;
         for (let i = 1; i <= 4; i++) {
             pile = this.getPile(i);
-            if (pile.getCouleur() == carte.couleur) {
+            if (pile.getCouleur() === carte.couleur) {
                 console.log("pile de couleur " + carte.couleur + " trouvee");
                 return i;
             }
@@ -207,10 +207,7 @@ class Partie {
 
     isCarteCliquable(carteAjuger, pile) {
         let isCarteCliquable = false;
-        if (carteAjuger == null) {
-            return false;
-
-        } else if (pile == null) {
+        if (carteAjuger == null || pile==null) {
             return false;
         }
         // parcourir toutes les cartes depuis le bas
@@ -225,8 +222,6 @@ class Partie {
                 cartePile = pile.getCarteN(pile.length - numCarteExaminee);
             else
                 break;
-
-
             numCarteExaminee++;
             if (cartePile == null) {
                 break;
@@ -283,7 +278,7 @@ class Partie {
                     this.coup.origine = "COL" + numeroColonne;
                     this.coup.destination = "COL" + colonne;
                     console.log("Montée de colonne vers colonne ok !");
-                };
+                }
             }
         }
 
@@ -298,7 +293,7 @@ class Partie {
             console.log("Premier clic, coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " ");
         } else {
             // Cas du second clic
-            if (this.coup.destination == null || this.coup.destination == "") {
+            if (this.coup.destination == null || this.coup.destination === "") {
                 this.coup.destination = "COL" + numeroColonne;
                 console.log("Second clic, coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
             }
@@ -329,13 +324,13 @@ class Partie {
             clickMagiqueOk = false;
         }
         // Si la pile est vide, et qu'on n'a pas un as, c'est loupé !
-        if (this.getPile(indexMaPile).getNbCartes() == 0) {
-            if (carte.valeur != 1) {
+        if (this.getPile(indexMaPile).getNbCartes() === 0) {
+            if (carte.valeur !== 1) {
                 clickMagiqueOk = false;
             }
         } else
         // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
-        if (carte.valeur != this.getPile(indexMaPile).getCarte().valeur + 1) {
+        if (carte.valeur !== this.getPile(indexMaPile).getCarte().valeur + 1) {
             clickMagiqueOk = false;
         }
         return clickMagiqueOk;
@@ -356,7 +351,6 @@ class Partie {
         if (numeroCarte > 1) {
             clicMagique = true;
         }
-
         if (clicMagique) {
             if (carte != null) {
                 this.coup.carte = carte;
@@ -371,7 +365,6 @@ class Partie {
                 this.coup.origine = "PIL" + numeroPile;
                 this.afficheCarteSuivantePile(numeroPile, carte);
                 return;
-
             }
             this.coup.destination = "PIL" + numeroPile;
             console.log("coup : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + ' ' + this.coup.origine + " " + this.coup.destination);
@@ -414,10 +407,10 @@ class Partie {
         console.log("click x = " + x + " y = " + y);
         console.log("click sur case libre  " + numeroCaseLibre + " carte " + carte);
 
-        let clickMagique = false;
+        // Si c'est un premier clic, on met en surbrillance la carte
 
         if (y > this.carteHauteurTete && carte != null) {
-            clickMagique = true;
+
             console.log("click magique sur case libre " + numeroCaseLibre + " carte " + carte);
             let clickMagiqueOk = this.cartePeutMonterDansLaPile(carte);
             let indexMaPile = this.getPileCouleurCarte(carte);
@@ -434,7 +427,7 @@ class Partie {
                     this.coup.origine = "CEL" + numeroCaseLibre;
                     this.coup.destination = "COL" + colonne;
                     console.log("Descente de pile vers colonne ok !");
-                };
+                }
             }
         } else {
             console.log("click normal sur case libre " + numeroCaseLibre + " carte " + carte);
@@ -454,11 +447,11 @@ class Partie {
         }
         // Sinon, on enregistre la destination
         else {
-            if (this.coup.destination == null || this.coup.destination == "") {
+            if (this.coup.destination == null || this.coup.destination === "") {
                 this.coup.destination = "CEL" + numeroCaseLibre;
                 console.log("destination enregistrée : " + "CEL" + numeroCaseLibre);
             }
-            console.log("coup laché sur CEL carte : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + " origine :" + this.coup.origine + " destination : " + this.coup.destination);
+            console.log("coup lâché sur CEL carte : " + this.coup.carte.valeur + ' ' + this.coup.carte.couleur + " origine :" + this.coup.origine + " destination : " + this.coup.destination);
             this.coup.jouer(this);
             this.coup = new Coup();
             this.affiche();
@@ -490,14 +483,13 @@ class Partie {
         let coup = this.listeDesCoups.deleteLastCoup();
         coup.annuler(this);
         this.affiche();
-
     }
 
     verifieVictoire() {
         let victoire = true;
         for (let i = 1; i <= 4; i++) {
             let pile = this.getPile(i); {
-                if (pile.getNbCartes() != 13) {
+                if (pile.getNbCartes() !== 13) {
                     victoire = false;
                 }
             }
@@ -507,7 +499,7 @@ class Partie {
         }
     }
 
-    demarrePartie() {
+        demarrePartie() {
         this.distribue();
         this.affiche();
     }
@@ -521,10 +513,9 @@ class Partie {
                 nbCasesLibres++;
             }
         }
-
         for (let i = 1; i <= 8; i++) {
             let colonne = this.getColonne(i);
-            if (colonne.getNbCartes() == 0) {
+            if (colonne.getNbCartes() === 0) {
                 nbCasesLibres++;
             }
         }
@@ -534,26 +525,17 @@ class Partie {
     chercheCarte(carte) {
         console.log("--- chercheCarte  " + carte.getNom());
         let trouve = false;
-        let i = 1;
-        let j = 1;
-        while (!trouve && i <= 8) {
-            let colonne = this.getColonne(i);
-            j = 0;
-            while (!trouve && j < colonne.getNbCartes()) {
-                if (colonne.getCarteN(j).isEquivalent(carte)) {
-
-                    trouve = true;
-                }
-                j++;
+        let colonne = 1;
+        let retourRecherche = null;
+        while (!trouve && colonne <= 8) {
+            retourRecherche = this.chercheDansColonne(carte, colonne);
+            colonne++;
+            if (retourRecherche !== null) {
+                console.log("Trouvé COL" + (colonne - 1) + " " + (retourRecherche));
+                return "COL" + (colonne - 1) + (retourRecherche);
             }
-            i++;
         }
-        if (trouve) {
-            console.log("Trouvé COL" + (i - 1) + " " + (j));
-            return "COL" + (i - 1) + (j);
-        }
-
-        i = 1;
+        let i = 1;
         while (!trouve && i <= 4) {
             let pile = this.getPile(i);
             if (pile.getCarte() === carte) {
@@ -564,7 +546,6 @@ class Partie {
         if (trouve) {
             return "PIL" + i;
         }
-
         i = 1;
         while (!trouve && i <= 4) {
             let caseLibre = this.getCaseLibre(i);
@@ -575,6 +556,24 @@ class Partie {
         }
         if (trouve) {
             return "CEL" + i;
+        } else {
+            return null;
+        }
+    }
+
+    chercheDansColonne(carte, numColonne) {
+        let trouve = false;
+        let numCarte = 1;
+        let colonne = this.getColonne(numColonne);
+
+        while (!trouve && numCarte < colonne.getNbCartes()) {
+            if (colonne.getCarteN(numCarte).isEquivalent(carte)) {
+                trouve = true;
+            }
+            numCarte++;
+        }
+        if (trouve) {
+            return numCarte;
         } else {
             return null;
         }

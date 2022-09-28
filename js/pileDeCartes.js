@@ -1,5 +1,4 @@
 class PileDeCartes {
-
     constructor() {
         // init an array with a for
         this.pileDeCartes = new Array(0);
@@ -10,7 +9,7 @@ class PileDeCartes {
     }
 
     estVide() {
-        return this.pileDeCartes.length == 0;
+        return this.pileDeCartes.length === 0;
     }
 
     getCarte() {
@@ -47,8 +46,9 @@ class PileDeCartes {
             console.log(i + " - " + carte.getNom());
         }
     }
+
     contientCarte(carte) {
-        // parcours la pile pour chercher la carte
+        // parcourt la pile pour chercher la carte
         for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
             if ( carte.isEquivalent(this.pileDeCartes[i])) {
                 return true;
@@ -56,6 +56,4 @@ class PileDeCartes {
         }
         return false;
     }
-
-
 }
