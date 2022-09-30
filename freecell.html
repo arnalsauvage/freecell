@@ -19,12 +19,11 @@
     <label for="chercheCarte">Cherche :</label><input type="text" id="chercheCarte" placeholder="Cherche carte" onkeyup="chercheCarte()">
 
     <button id="btnNouvellePartie">Nouvelle partie</button>
+    <button id="btnPartieNonMelangee" onclick="nouvellePartieNonMelangee();">Partie non melangee</button>
     <button id="btnArriere" onclick="partie.arriere()">Arrière</button>
     <button id="button-verifier"> 🔎 Vérifier faisabilité</button>
     <button id="button-aide-raz" onclick="razAide()">⚐ R.A.Z Aide</button>
     <button id="button-aide-candidatsUniques" onclick="montreLesCandidatsUniques()"> ▦ Cartes libres</button>
-
-
 
     <label for="zonetextesudoku"> <button id="button-sudoku-vers-texte" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button></label>
     <textarea cols="9" id="zonetextesudoku" name="saisie" rows="9">VK AT DP RC 1K</textarea>
@@ -34,7 +33,6 @@
     <script src="js/caseLibre.js"></script>
     <script src="js/pileDeCartes.js"></script>
     <script src="js/jeuDeCartes.js"></script>
-    <script src="js/testcarte.js"></script>
     <script src="js/pileDeCouleur.js"></script>
     <script src="js/coup.js"></script>
     <script src="js/listeCoups.js"></script>

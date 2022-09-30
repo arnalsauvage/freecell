@@ -34,5 +34,21 @@ describe("Suite de tests listeCoups.js", function() {
 
     });
 
+    it("Test de la fonction isEquivalent", function() {
+        let maCarte = new Carte(1, "C");
+        maPile= new PileDeCartes();
+        let maPile2 = new PileDeCartes ();
+        maPile.ajouteCarte(maCarte);
+        maPile2.ajouteCarte(maCarte);
+        maCarte = new Carte(2, "C");
+        maPile.ajouteCarte(maCarte);
+        maPile2.ajouteCarte(maCarte);
+        maCarte = new Carte(3, "C");
+        maPile.ajouteCarte(maCarte);
+        maPile2.ajouteCarte(maCarte);
+        expect(maPile.isEquivalent(maPile2)).toEqual(true);
+
+    });
+
 });
 

@@ -22,10 +22,6 @@ class JeuDeCartes {
         this.jeuDeCartes.melanger();
     }
 
-    displayCards() {
-        this.jeuDeCartes.displayCards();
-    }
-
     prendCarte() {
         return this.jeuDeCartes.prendCarte();
     }

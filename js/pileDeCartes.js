@@ -37,23 +37,52 @@ class PileDeCartes {
         return this.pileDeCartes[index];
     }
 
-    displayCards() {
+    toString() {
         // display all cards in jeuDeCartes
-        console.log("Longueur de la pile : " + this.pileDeCartes.length);
+        let retour = "";
+        retour += "Longueur de la pile : " + this.pileDeCartes.length;
         let carte;
+
         for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
             carte = this.pileDeCartes[i];
-            console.log(i + " - " + carte.getNom());
+            retour += " - " + carte.getNom();
         }
+        return retour;
     }
 
     contientCarte(carte) {
         // parcourt la pile pour chercher la carte
+        if (this.estVide()) {
+            return false;
+        }
+        console.debug("contientCarte :  cherche carte "  + carte.getNom());
         for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
+            console.debug("element  " + i + " " + this.pileDeCartes[i].getNom());
             if ( carte.isEquivalent(this.pileDeCartes[i])) {
+                console.debug("contientCarte :  carte trouvée !");
                 return true;
             }
         }
         return false;
+    }
+
+    isEquivalent(autrePile) {
+
+        // If number of properties is different,
+        // objects are not equivalent
+        if (autrePile.pileDeCartes.length !== this.pileDeCartes.length) {
+            return false;
+        }
+        console.log("Longueur des piles : " + autrePile.pileDeCartes.length + " - " + this.pileDeCartes.length);
+        for (let i = 0; i < autrePile.pileDeCartes.length; i++) {
+            if (!autrePile.pileDeCartes[i].isEquivalent(this.pileDeCartes[i])) {
+                console.log("cartes " + i + " différentes : " + autrePile.pileDeCartes[i].getNom() + " - " + this.pileDeCartes[i].getNom());
+                return false;
+            }
+        }
+
+        // If we made it this far, objects
+        // are considered equivalent
+        return true;
     }
 }

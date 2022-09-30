@@ -19,7 +19,7 @@ describe("Suite de tests Coup.js", function() {
     });
 
     it("Test de la fonction coupValable", function() {
-        // D'une colonne vers l'autre
+        // D'une colonnes vers l'autre
         maCarte = new Carte (13, "K");
         monCoup = new Coup(maCarte,"COL2", "COL1");
         expect(monCoup.coupValable(maPartie)).toEqual(false);
@@ -27,17 +27,17 @@ describe("Suite de tests Coup.js", function() {
         monCoup = new Coup(maCarte,"COL3", "COL1");
         expect(monCoup.coupValable(maPartie)).toEqual(true);
 
-        // D'une colonne vers une cellule libre ==> ok
+        // D'une colonnes vers une cellule libre ==> ok
         maCarte = new Carte (13, "K");
         monCoup = new Coup(maCarte,"COL2", "CEL1");
         expect(monCoup.coupValable(maPartie)).toEqual(true);
 
-        // D'une colonne vers une cellule occupée ==> ko
+        // D'une colonnes vers une cellule occupée ==> ko
         maPartie.getCaseLibre(1).poseCarte(new Carte(1, "C"));
         monCoup = new Coup(maCarte,"COL2", "CEL1");
         expect(monCoup.coupValable(maPartie)).toEqual(false);
 
-        // D'une colonne vers une pile avec la bonne carte ==> ok
+        // D'une colonnes vers une pile avec la bonne carte ==> ok
         maCarte = new Carte (1, "P");
         monCoup = new Coup(maCarte,"COL8", "PIL1");
         expect(monCoup.coupValable(maPartie)).toEqual(true);
@@ -53,7 +53,7 @@ describe("Suite de tests Coup.js", function() {
         maCarte = new Carte (6, "K");
         monCoup = new Coup(maCarte,"COL3", "COL1");
 
-        let autreCarte = monCoup.recupCarteJouee(maPartie);
+        let autreCarte = monCoup.controleCarteJouee(maPartie);
         expect(autreCarte).toEqual(maCarte);
 
         // RECUPERE LA CARTE JOUEE DEPUIS CASE LIBRE
@@ -61,7 +61,7 @@ describe("Suite de tests Coup.js", function() {
         monCoup = new Coup(maCarte,"COL7", "CEL1");
         monCoup.jouer(maPartie);
         monCoup = new Coup(maCarte,"CEL1", "COL7");
-        let autrecarte = monCoup.recupCarteJouee( maPartie);
+        let autrecarte = monCoup.controleCarteJouee( maPartie);
         expect(autrecarte).toEqual(maCarte);
     });
 
@@ -122,8 +122,11 @@ describe("Suite de tests Coup.js", function() {
 
         // Test CEL vers PIL
         maCarte = new Carte (1, "P");
-        monCoup = new Coup(maCarte,"COL8", "PIL1");
+        monCoup = new Coup(maCarte,"COL8", "CEL1");
+        monCoup2 = new Coup(maCarte,"CEL1", "PIL1");
         monCoup.jouer(maPartie);
+        monCoup2.jouer(maPartie);
+        monCoup2.annuler(maPartie);
         monCoup.annuler(maPartie);
         expect(maPartie.getColonne(8).getCarte().isEquivalent(maCarte)).toEqual(true);
     });

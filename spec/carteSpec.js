@@ -11,8 +11,8 @@ describe("Suite de tests Carte.js", function() {
     });
 
     it("Test de la fonction isEquivalent", function() {
-        let carte = new Carte(1, 1);
-        let carte2 = new Carte(1, 1);
+        let carte = new Carte(1, "P");
+        let carte2 = new Carte(1, "P");
         expect(carte.isEquivalent(carte2)).toEqual(true);
         carte2.setValeur(2);
         expect(carte.isEquivalent(carte2)).toEqual(false);

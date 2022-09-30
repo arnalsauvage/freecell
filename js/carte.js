@@ -23,7 +23,7 @@ class Carte {
     }
 
     isEquivalent(carte) {
-        return this.valeur === carte.valeur && this.couleur === carte.couleur;
+        return this.valeur === carte.valeur && this.couleur.toLowerCase() === carte.couleur.toLowerCase();
     }
 
     setCouleur(maCouleur) {
@@ -35,6 +35,23 @@ class Carte {
 
     getCouleur() {
         return this.couleur;
+    }
+
+    getCouleurNumero() {
+        switch (this.couleur) {
+            case "K":
+                return 3;
+            case "C":
+                return 2;
+            case "P":
+                return 1;
+            case "T":
+                return 4;
+            default:
+                if (this.log <= 4)
+                    console.log("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                return "erreur carte.js !!!";
+        }
     }
 
     getNomCouleur() {
@@ -144,6 +161,14 @@ class Carte {
 
     estNoir() {
         return (this.couleur === "P" || this.couleur === "T");
+    }
+
+    estValide() {
+        if( ! ( this.valeur > 0 && this.valeur < 14) ){
+         return false
+        }
+        return !(this.couleur !== "K" && this.couleur !== "C" && this.couleur !== "P" && this.couleur !== "T");
+
     }
 
     peutPoserSur(autreCarte) {

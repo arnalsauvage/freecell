@@ -15,7 +15,7 @@ class Coup {
     }
 
     setOrigine(origine) {
-        // COL pour colonne, CEL pour cellule, PIL pour Pile
+        // COL pour colonnes, CEL pour cellule, PIL pour Pile
         if (origine == null) {
             this.origine = "";
             return;
@@ -47,7 +47,7 @@ class Coup {
     }
 
     setDestination(destination) {
-        // COL pour colonne, CEL pour cellule, PIL pour Pile
+        // COL pour colonnes, CEL pour cellule, PIL pour Pile
         if (destination == null) {
             this.destination = "";
             return;
@@ -87,9 +87,9 @@ class Coup {
     }
 
     coupValable(partie) {
-        let carteJouee = this.recupCarteJouee(partie);
+        let carteJouee = this.controleCarteJouee(partie);
 
-        // Si la destination est une colonne, on récupère la colonne visée
+        // Si la destination est une colonnes, on récupère la colonnes visée
         if (this.destination.slice(0, 3) === "COL") {
             let colonneDestination = this.destination.slice(3, 4);
             let carteDestination = partie.getColonne(colonneDestination).getCarte();
@@ -127,19 +127,15 @@ class Coup {
         }
     }
 
-    recupCarteJouee(partie) {
+    controleCarteJouee(partie) {
         let carteJouee = this.carte;
         this.carte = null;
         if (this.origine.slice(0, 3) === "COL") {
             let colonneOrigine = this.origine.slice(3, 4);
-            if (partie.getColonne(colonneOrigine).estVide()) {
-                console.log("Colonne vide");
-                return null;
-            }
             if (partie.getColonne(colonneOrigine).contientCarte(carteJouee)) {
                 this.carte = carteJouee;
             }
-            console.debug("Carte jouée : " + carteJouee.getNom() + "colonne " + colonneOrigine);
+            console.debug("Carte jouée : " + carteJouee.getNom() + "colonnes " + colonneOrigine);
         }
         if (this.origine.slice(0, 3) === "CEL") {
             let numeroCellule = this.origine.slice(3, 4);
@@ -153,39 +149,43 @@ class Coup {
     }
 
     jouer(partie) {
-        if (this.coupValable(partie)) {
-            let carteJouee = null;
-            console.log("Coup joué : carte " + this.carte + " de " + this.getOrigine() + " vers " + this.getDestination());
-            partie.listeDesCoups.addCoup(this);
-            if (this.origine.slice(0, 3) === "COL") {
-                let colonneOrigine = this.origine.slice(3, 4);
-                carteJouee = partie.getColonne(colonneOrigine).prendCarte();
-                console.log("Carte jouée : " + carteJouee);
-            }
-            if (this.origine.slice(0, 3) === "CEL") {
-                let celluleOrigine = this.origine.slice(3, 4);
-                carteJouee = partie.getCaseLibre(celluleOrigine).prendCarte();
-                console.log("Carte jouée : " + carteJouee);
-            }
-            if (this.destination.slice(0, 3) === "COL") {
-                let colonneDestination = this.destination.slice(3, 4);
-                partie.getColonne(colonneDestination).ajouteCarte(carteJouee);
-                console.log("Carte posée sur la colonne " + colonneDestination);
-            }
-            if (this.destination.slice(0, 3) === "CEL") {
-                let celluleDestination = this.destination.slice(3, 4);
-                partie.getCaseLibre(celluleDestination).poseCarte(carteJouee);
-            }
-            if (this.destination.slice(0, 3) === "PIL") {
-                let pileDestination = this.destination.slice(3, 4);
-                partie.getPile(pileDestination).ajouteCarte(carteJouee);
-            }
-            partie.verifieVictoire();
+        if (!this.coupValable(partie)) {
+            console.log("Coup invalide !!!");
         }
+
+        let carteJouee = null;
+        console.log("Coup joué : carte " + this.carte.getNom() + " de " + this.getOrigine() + " vers " + this.getDestination());
+        partie.listeDesCoups.addCoup(this);
+        if (this.origine.slice(0, 3) === "COL") {
+            let colonneOrigine = this.origine.slice(3, 4);
+            carteJouee = partie.getColonne(colonneOrigine).prendCarte();
+            console.log("Carte jouée : " + carteJouee.getNom() + "colonnes " + colonneOrigine);
+        }
+        if (this.origine.slice(0, 3) === "CEL") {
+            let celluleOrigine = this.origine.slice(3, 4);
+            carteJouee = partie.getCaseLibre(celluleOrigine).prendCarte();
+            console.log("Carte jouée : " + carteJouee + "cellule " + celluleOrigine);
+        }
+        if (this.destination.slice(0, 3) === "COL") {
+            let colonneDestination = this.destination.slice(3, 4);
+            partie.getColonne(colonneDestination).ajouteCarte(carteJouee);
+            console.log("Carte " + carteJouee.getNom() + "posée sur la colonnes " + colonneDestination);
+        }
+        if (this.destination.slice(0, 3) === "CEL") {
+            let celluleDestination = this.destination.slice(3, 4);
+            partie.getCaseLibre(celluleDestination).poseCarte(carteJouee);
+            console.log("Carte " + carteJouee.getNom() + "posée sur la cellule " + celluleDestination);
+        }
+        if (this.destination.slice(0, 3) === "PIL") {
+            let pileDestination = this.destination.slice(3, 4);
+            partie.getPile(pileDestination).ajouteCarte(carteJouee);
+            console.log("Carte " + carteJouee.getNom() + "posée sur la pile " + pileDestination);
+        }
+
     }
 
     annuler(partie) {
-        // Si la carte est arrivée dans une colonne, on la reprend dans la colonne
+        // Si la carte est arrivée dans une colonnes, on la reprend dans la colonnes
         if (this.destination.slice(0, 3) === "COL") {
             this.carte = partie.getColonne(this.destination.slice(3, 4)).prendCarte();
         }
@@ -197,7 +197,7 @@ class Coup {
         if (this.destination.slice(0, 3) === "PIL") {
             this.carte = partie.getPile(this.destination.slice(3, 4)).prendCarte();
         }
-        // Si la carte vient d'une colonne, on la remet dans la colonne
+        // Si la carte vient d'une colonnes, on la remet dans la colonnes
         if (this.origine.slice(0, 3) === "COL") {
             partie.getColonne(this.origine.slice(3, 4)).ajouteCarte(this.carte);
         }
@@ -213,5 +213,9 @@ class Coup {
 
     isEquivalent(coup) {
         return this.carte.isEquivalent(coup.carte) && this.origine === coup.origine && this.destination === coup.destination;
+    }
+
+    toString() {
+        return "Coup : " + this.carte.getNom() + " de " + this.origine + " vers " + this.destination;
     }
 }
