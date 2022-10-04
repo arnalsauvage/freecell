@@ -1,4 +1,4 @@
-describe("Suite de tests listeCoups.js", function() {
+describe("Suite de tests PileDeCartes.js", function() {
     let maPile;
 
     beforeEach(function() {
@@ -50,5 +50,22 @@ describe("Suite de tests listeCoups.js", function() {
 
     });
 
+    it("Test de la fonction prendCarte", function() {
+        let maCarte = new Carte(1, "C");
+        maPile.ajouteCarte(maCarte);
+        maCarte = new Carte(2, "C");
+        maPile.ajouteCarte(maCarte);
+        maCarte = new Carte(3, "C");
+        maPile.ajouteCarte(maCarte);
+        maCarte = new Carte(4, "C");
+        maPile.ajouteCarte(maCarte);
+        maCarte = new Carte(5, "C");
+        maPile.ajouteCarte(maCarte);
+        expect(maPile.contientCarte(new Carte(1, "C"))).toEqual(true);
+        expect(maPile.getNbCartes()).toEqual(5);
+        maPile.prendCarte();
+        expect(maPile.getNbCartes()).toEqual(4);
+        expect(maPile.contientCarte(new Carte(5, "C"))).toEqual(false);
+    });
 });
 

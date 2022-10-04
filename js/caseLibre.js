@@ -1,7 +1,6 @@
 class CaseLibre {
 
     constructor() {
-        // init an array with a for
         this.carte = null;
     }
 

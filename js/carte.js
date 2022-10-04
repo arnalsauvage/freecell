@@ -3,18 +3,15 @@ class Carte {
     constructor(valeur, couleur) {
         this.setValeur(valeur);
         this.setCouleur(couleur);
-        this.log = 1; // 1 : debug , 2: info, 3 : warning , 4 : error
     }
 
     setValeur(maValeur) {
         maValeur = parseInt(maValeur);
         if ((maValeur > 0) && (maValeur < 14)) {
             this.valeur = maValeur;
-            if (this.log === 1)
-                console.log("Valeur " + maValeur + " initialisée");
+                console.debug("Valeur " + maValeur + " initialisée");
         } else {
-            if (this.log <= 4)
-                console.log("/!\ -- Erreur, valeur " + maValeur + " non autorisée dans carte.js");
+                console.debug("/!\ -- Erreur, valeur " + maValeur + " non autorisée dans carte.js");
         }
     }
 
@@ -23,6 +20,8 @@ class Carte {
     }
 
     isEquivalent(carte) {
+        if (this==null || carte === null)
+            return false;
         return this.valeur === carte.valeur && this.couleur.toLowerCase() === carte.couleur.toLowerCase();
     }
 
@@ -48,8 +47,7 @@ class Carte {
             case "T":
                 return 4;
             default:
-                if (this.log <= 4)
-                    console.log("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                 console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
                 return "erreur carte.js !!!";
         }
     }
@@ -65,8 +63,7 @@ class Carte {
             case "T":
                 return "Trèfle";
             default:
-                if (this.log <= 4)
-                    console.log("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
                 return "erreur carte.js !!!";
         }
     }
@@ -82,8 +79,7 @@ class Carte {
             case "T":
                 return "♣";
             default:
-                if (this.log <= 4)
-                    console.log("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
                 return " ";
         }
     }
@@ -121,7 +117,7 @@ class Carte {
                 couleur = "T";
                 break;
         }
-        console.log("Couleur du numéro " + numero + " = " + couleur);
+        console.debug("Couleur du numéro " + numero + " = " + couleur);
         return couleur;
     }
 
@@ -168,7 +164,6 @@ class Carte {
          return false
         }
         return !(this.couleur !== "K" && this.couleur !== "C" && this.couleur !== "P" && this.couleur !== "T");
-
     }
 
     peutPoserSur(autreCarte) {
@@ -186,6 +181,6 @@ class Carte {
     }
 
     getNomCourt() {
-        return "" + this.getNomCourtFigure() + " " + this.getIconeCouleur();
+        return " " + this.getNomCourtFigure() + " " + this.getIconeCouleur();
     }
 }

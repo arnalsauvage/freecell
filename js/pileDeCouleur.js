@@ -6,7 +6,7 @@ class PileDeCouleur extends PileDeCartes {
 
     ajouteCarte(carte) {
         if (carte.couleur !== this.couleur) {
-            console.log("La couleur de la carte n'est pas la même que la couleur de la pile");
+            console.debug("La couleur de la carte n'est pas la même que la couleur de la pile");
             return false;
         }
         if (this.estVide()) {

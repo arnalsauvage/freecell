@@ -147,8 +147,8 @@ class Partie {
         let x = (numero - 1) * this.carteLargeur;
         let y = 0;
         for (let i = 0; i < colonne.getNbCartes(); i++) {
-            let cliquable = this.isCarteCliquable(colonne.getCarteN(i), colonne);
-            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", cliquable);
+            // let cliquable = this.isCarteCliquable(colonne.getCarteN(i), colonne);
+            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne");
             y += this.carteHauteurTete;
         }
     }
@@ -224,7 +224,7 @@ class Partie {
             return false;
         }
 
-            // if carte in colonnes
+        // if carte in colonnes
         for (let i = 1; i <= 8; i++) {
             let colonne = this.getColonne(i);
             if (colonne.getCarte() === carteAjuger) {
@@ -515,6 +515,9 @@ class Partie {
         if (this.verifieVictoire()) {
             alert("Conglaturations :D !");
         }
+        if (this.compterLesCartesEnJeu() != 52) {
+            alert("Il manque des cartes !");
+        }
     }
 
     arriere() {
@@ -620,7 +623,7 @@ class Partie {
 
     cartesCliquablesColonne(colonne) {
         let cartesCliquable = new PileDeCartes();
-        if (colonne==null) {
+        if (colonne == null) {
             console.debug("colonne null dans PArtie.js.cartesCliquablesColonne");
             return cartesCliquable;
         }
@@ -669,4 +672,21 @@ class Partie {
             this.dessineCarte(carte, x, y, "CaseLibre", true);
         }
     }
+
+    compterLesCartesEnJeu() {
+        let nbCartesEnJeu = 0;
+        for (let i = 1; i <= 4; i++) {
+            nbCartesEnJeu += this.getPile(i).getNbCartes();
+        }
+        for (let i = 1; i <= 8; i++) {
+            nbCartesEnJeu += this.getColonne(i).getNbCartes();
+        }
+        for (let i = 1; i <= 4; i++) {
+            if (this.getCaseLibre(i).getCarte() !== null) {
+                nbCartesEnJeu++;
+            }
+        }
+        return nbCartesEnJeu;
+    }
+
 }

@@ -1,6 +1,5 @@
 class PileDeCartes {
     constructor() {
-        // init an array with a for
         this.pileDeCartes = new Array(0);
     }
 
@@ -68,21 +67,16 @@ class PileDeCartes {
 
     isEquivalent(autrePile) {
 
-        // If number of properties is different,
-        // objects are not equivalent
         if (autrePile.pileDeCartes.length !== this.pileDeCartes.length) {
             return false;
         }
-        console.log("Longueur des piles : " + autrePile.pileDeCartes.length + " - " + this.pileDeCartes.length);
+        console.debug("Longueur des piles : " + autrePile.pileDeCartes.length + " - " + this.pileDeCartes.length);
         for (let i = 0; i < autrePile.pileDeCartes.length; i++) {
             if (!autrePile.pileDeCartes[i].isEquivalent(this.pileDeCartes[i])) {
-                console.log("cartes " + i + " différentes : " + autrePile.pileDeCartes[i].getNom() + " - " + this.pileDeCartes[i].getNom());
+                console.debug("cartes " + i + " différentes : " + autrePile.pileDeCartes[i].getNom() + " - " + this.pileDeCartes[i].getNom());
                 return false;
             }
         }
-
-        // If we made it this far, objects
-        // are considered equivalent
         return true;
     }
 }

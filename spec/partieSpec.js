@@ -59,19 +59,14 @@ describe("Suite de tests Partie.js", function () {
         // When on déplace la carte 6K de la colonne 3 vers la colonne 1
         let monCoup = new Coup();
         monCoup.setOrigine("COL" + 3);
-        let maCarte = maPartie.getColonne(3).getCarte();
-        monCoup.setCarte(maCarte);
-        monCoup.setDestination("COL" + 1);
-        console.log ("--PartieSpec mon Coup (col 3 vers col 1):  " + monCoup.toString());
-        monCoup.jouer(maPartie);
+        let maCarte = maPartie.getColonne(3).prendCarte();
+        maPartie.getColonne(1).ajouteCarte(maCarte);
 
         // Then le 6 de carreau et le 7 de trèfle sont cliquables
         expect(maPartie.isCarteCliquable(new Carte(6, "K"))).toEqual(true);
 
         console.log ("----------- test 7 de trèfle !!! --------------- ");
         expect(maPartie.isCarteCliquable(new Carte(7, "T"))).toEqual(true);
-
-
     });
 
     // À faire en cypress
@@ -137,11 +132,8 @@ describe("Suite de tests Partie.js", function () {
         for (let i = 1; i < 5; i++) {
 
             monCoup.setOrigine("COL" + 8);
-            let maCarte = maPartie.getColonne(8).getCarte();
-            monCoup.setCarte(maCarte);
-            monCoup.setDestination("CEL" + i);
-            console.log("--PartieSpec mon Coup (col " + i + ":  " + monCoup.toString());
-            monCoup.jouer(maPartie);
+            let maCarte = maPartie.getColonne(8).prendCarte();
+            maPartie.getCaseLibre( i).poseCarte(maCarte);
             expect(maPartie.compteCasesLibres()).toEqual(4 - i);
         }
     });
@@ -195,6 +187,11 @@ describe("Suite de tests Partie.js", function () {
 
     });
 
+    it("Test de la fonction compterLesCartesEnJeu( )", function () {
+        // Given la partie non mélangée
+        maPartie.distribue(false);
+        expect(maPartie.compterLesCartesEnJeu()).toEqual(52);
+    });
 });
 
 
