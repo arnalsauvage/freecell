@@ -198,13 +198,17 @@ describe("Suite de tests Coup.js", function() {
         expect(maPartie.getColonne(8).getCarte().isEquivalent(maCarte)).toEqual(true);
 
             // Test CEL vers COL
+        // On bouge le 6 de carreau vers la cellule 1
         maCarte = new Carte(6, "K");
         monCoup = new Coup(maCarte, "COL3", "CEL1");
         monCoup.jouer(maPartie);
         expect(maPartie.getCaseLibre(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+
+        // On descend le 8 de carreau vers la colonne 1
         let monCoup2 = new Coup(maCarte, "CEL1", "COL1");
         monCoup2.jouer(maPartie);
         expect(maPartie.getColonne(1).getCarte().isEquivalent(maCarte)).toEqual(true);
+
         monCoup2.annuler(maPartie);
         expect(maPartie.getCaseLibre(1).getCarte().isEquivalent(maCarte)).toEqual(true);
         monCoup.annuler(maPartie);

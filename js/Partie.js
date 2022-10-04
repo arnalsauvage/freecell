@@ -220,7 +220,7 @@ class Partie {
 
         let position = this.chercheCarte(carteAjuger);
         if (position == null) {
-            console.debug("carte a juger non trouvee");
+            console.warn("Partie.js - carte a juger non trouvee");
             return false;
         }
 
@@ -564,7 +564,7 @@ class Partie {
     }
 
     chercheCarte(carte) {
-        console.log("--- chercheCarte  " + carte.getNom());
+        console.log("- Partie.js -- chercheCarte  " + carte.getNom());
         let trouve = false;
         let colonne = 1;
         let retourRecherche = null;
@@ -605,7 +605,7 @@ class Partie {
 
     chercheDansColonne(carte, numColonne) {
         let trouve = false;
-        let numCarte = 1;
+        let numCarte = 0;
         let colonne = this.getColonne(numColonne);
 
         while (!trouve && numCarte < colonne.getNbCartes()) {

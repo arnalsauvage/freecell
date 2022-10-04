@@ -145,7 +145,7 @@ describe("Suite de tests Partie.js", function () {
         expect(maPartie.chercheCarte(new Carte(1, "C"))).toEqual("COL65");
         expect(maPartie.chercheCarte(new Carte(1, "K"))).toEqual("COL45");
         expect(maPartie.chercheCarte(new Carte(1, "T"))).toEqual("COL26");
-
+        expect(maPartie.chercheCarte(new Carte(13, "T"))).toEqual("COL11");
     });
 
     it("Test de la fonction chercheDansColonne(carte, numColonne)", function () {
