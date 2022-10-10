@@ -20,9 +20,17 @@ class Coup {
         this.origine = this.verifieOrigineDest(origine);
     }
 
+    getOrigine() {
+        return this.origine;
+    }
+
     setDestination(destination) {
         // COL pour colonnes, CEL pour cellule, PIL pour Pile
         this.destination = this.verifieOrigineDest(destination);
+    }
+
+    getDestination() {
+        return this.destination;
     }
 
     verifieOrigineDest(origineDest) {
@@ -52,12 +60,127 @@ class Coup {
         }
     }
 
-    getOrigine() {
-        return this.origine;
+    getTypeOrigineOuDest(origineOuDest) {
+        let typeOrigineOuDest;
+        if (origineOuDest.length === 4) {
+            typeOrigineOuDest = origineOuDest.slice(0, 3);
+        } else {
+            typeOrigineOuDest = "";
+        }
+        return typeOrigineOuDest
     }
 
-    getDestination() {
-        return this.destination;
+    getTypeOrigine() {
+        return this.getTypeOrigineOuDest(this.getOrigine());
+    }
+
+    getTypeDestination() {
+        return this.getTypeOrigineOuDest(this.getDestination());
+    }
+
+    getNum(origineOuDest) {
+        let numOrigineOuDest;
+        if (origineOuDest.length === 4) {
+            numOrigineOuDest = parseInt(origineOuDest.slice(3, 4));
+        } else {
+            numOrigineOuDest = null;
+        }
+        return numOrigineOuDest;
+    }
+
+    getNumOrigine() {
+        return this.getNum(this.origine);
+    }
+
+    getNumDestination() {
+        return this.getNum(this.destination);
+    }
+
+    isEquivalent(coup) {
+        return (this.carte.isEquivalent(coup.carte) && this.origine === coup.origine && this.destination === coup.destination);
+    }
+
+    toString() {
+        let carte = " pas de carte";
+        if (typeof this.carte !== 'undefined') {
+            carte = this.carte.getNom();
+        }
+        return "Coup : " + carte + " de " + this.origine + " vers " + this.destination;
+    }
+
+    // evalue le nombre de cartes deplacables selon la colonne jouée
+    // (sans tenir compte des cartes dans la colonne jouée)
+    evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) {
+        let casesLibres = partie.getNbCasesLibres();
+        console.log("casesLibres : " + casesLibres);
+        let nbCartesDeplacables = casesLibres;
+        let nbColonnesLibresHorsDeplacement = partie.getNbColonnesVides();
+        console.log("nbColonnesLibresHorsDeplacement : " + nbColonnesLibresHorsDeplacement);
+        if (this.getTypeOrigine() === "COL") {
+            let isCarteDeplaceeSurColonneVide = partie.getColonne(this.getNumOrigine()) === null;
+            console.log("isCarteDeplaceeSurColonneVide : " + isCarteDeplaceeSurColonneVide);
+            if (isCarteDeplaceeSurColonneVide) {
+                nbColonnesLibresHorsDeplacement--;
+            }
+            console.log('nbColonnesLibresHorsDeplacement : ' + nbColonnesLibresHorsDeplacement);
+            let compteurColonnes = 1;
+            while (compteurColonnes <= nbColonnesLibresHorsDeplacement) {
+                nbCartesDeplacables += nbCartesDeplacables + compteurColonnes;
+                compteurColonnes++;
+            }
+            nbCartesDeplacables++;
+        }
+        return nbCartesDeplacables;
+    }
+
+    recupPileCartesJouees(partie, enleverVraimentLEsCartesDeLaColonne) {
+
+        let pileCartesJouees = new PileDeCartes();
+        if (this.carte == null)
+            return pileCartesJouees;
+        if (this.getTypeOrigine() !== "COL") {
+            return pileCartesJouees;
+        }
+        let carteParcourue;
+        let n = 1;
+        console.log("Coup.js - recupePileCartesJouees - carte jouée : " + this.carte.getNom());
+        do {
+            carteParcourue = partie.getColonne(this.getNumOrigine()).prendCarte();
+            pileCartesJouees.ajouteCarte(carteParcourue);
+            if (typeof (pileCartesJouees.getCarte()) !== 'undefined') {
+                console.debug("Carte " + n + " : ajoutée " + carteParcourue.getNom() + "colonnes " + this.getNumOrigine());
+            }
+            n++;
+        }
+        while (typeof carteParcourue !== 'undefined' && !carteParcourue.isEquivalent(this.carte) && n < 50)
+
+        if (!enleverVraimentLEsCartesDeLaColonne) {
+            for (let i = pileCartesJouees.getNbCartes()-1; i >=0 ; i--) {
+                partie.getColonne(this.getNumOrigine()).ajouteCarte(pileCartesJouees.getCarteN(i));
+            }
+        }
+        return pileCartesJouees;
+    }
+
+    controleCarteJoueeEtOrigine(partie) {
+        if (this.carte == null || this.origine.length < 4) {
+            return false;
+        }
+
+        if (this.getTypeOrigine() === "COL") {
+            if (!partie.getColonne(this.getNumOrigine()).contientCarte(this.carte)) {
+                return false;
+            }
+            console.debug("Carte jouée : " + this.carte.getNom() + "colonnes " + this.getNumOrigine());
+        }
+        if (this.getTypeOrigine() ===  "CEL") {
+            let carteJouee = partie.getCaseLibre(this.getNumOrigine()).getCarte();
+            if (!this.carte.isEquivalent(carteJouee)) {
+                return false;
+            }
+            console.log("Carte jouée : " + carteJouee.getNom() + "cellule " + this.getNumOrigine());
+        }
+        return (partie.isCarteCliquable(this.carte));
     }
 
     coupValable(partie) {
@@ -68,13 +191,15 @@ class Coup {
         let destination = this.destination.slice(0, 3);
         let carteDestination;
         let numeroDest = parseInt(this.destination.slice(3, 4));
+        let numeroOrigine = this.getOrigine();
 
         // Si la destination est une colonne, on récupère la colonne visée
         switch (destination) {
             case "COL" :
                 carteDestination = partie.getColonne(numeroDest).getCarte();
                 // Si la carte peut se poser sur l'autre carte, le coup est valide
-                return this.carte.peutPoserSur(carteDestination);
+                return (this.carte.peutPoserSur(carteDestination) &&
+                    this.evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) >= this.recupPileCartesJouees(partie,false).getNbCartes());
 
             // Si la destination est une cellule, on récupère la cellule visée
             case "CEL":
@@ -102,83 +227,39 @@ class Coup {
         }
     }
 
-    controleCarteJoueeEtOrigine(partie) {
-        if (this.carte == null || this.origine.length < 4) {
-            return false;
-        }
-        if (this.origine.slice(0, 3) === "COL") {
-            let colonneOrigine = this.origine.slice(3, 4);
-            if (!partie.getColonne(colonneOrigine).contientCarte(this.carte)) {
-                return false;
-            }
-            console.debug("Carte jouée : " + this.carte.getNom() + "colonnes " + colonneOrigine);
-        }
-        if (this.origine.slice(0, 3) === "CEL") {
-            let numeroCellule = this.origine.slice(3, 4);
-            let carteJouee = partie.getCaseLibre(numeroCellule).getCarte();
-            if (!this.carte.isEquivalent(carteJouee)) {
-                return false;
-            }
-            console.log("Carte jouée : " + carteJouee.getNom() + "cellule " + numeroCellule);
-        }
-        return (partie.isCarteCliquable(this.carte));
-    }
-
     jouer(partie) {
         if (!this.coupValable(partie)) {
-            console.log("Coup invalide !!!");
+            console.log("Coup.js - jouer - Coup invalide !!!");
             return;
         }
-
         let carteJouee = this.carte;
-        console.log("! ! ! ! ! ! ! ! Coup joué : carte " + this.carte.getNom() + " de " + this.getOrigine() + " vers " + this.getDestination());
-        partie.listeDesCoups.addCoup(this);
+        console.log("Coups.js - jouer - ! ! ! ! ! ! ! ! Coup joué : carte " + this.carte.getNom() + " de " + this.getOrigine() + " vers " + this.getDestination());
         let pileCartesJouees = new PileDeCartes();
 
-        if (this.origine.slice(0, 3) === "COL") {
-            let colonneOrigine = this.origine.slice(3, 4);
-            pileCartesJouees = this.recupPileCartesJouees(partie, colonneOrigine);
-
-            console.log("Carte jouée : " + carteJouee.getNom() + "colonnes " + colonneOrigine);
+        if (this.getTypeOrigine() === "COL") {
+            pileCartesJouees = this.recupPileCartesJouees(partie, true);
+            console.log("Coups.js - jouer - Carte jouée : " + carteJouee.getNom() + "colonne " + this.origine);
         }
-        if (this.origine.slice(0, 3) === "CEL") {
-            let celluleOrigine = this.origine.slice(3, 4);
-            pileCartesJouees.ajouteCarte(partie.getCaseLibre(celluleOrigine).prendCarte());
-            console.log("Carte jouée : " + carteJouee + "cellule " + celluleOrigine);
+        if (this.getTypeOrigine() === "CEL") {
+            pileCartesJouees.ajouteCarte(partie.getCaseLibre(this.getNumOrigine()).prendCarte());
+            console.log("Coups.js - jouer - Carte jouée : " + carteJouee + "cellule " + this.getNumOrigine());
         }
-        if (this.destination.slice(0, 3) === "COL") {
-            let colonneDestination = this.destination.slice(3, 4);
+        if (this.getTypeDestination() === "COL") {
+            console.log(("Coups.js - jouer - ajout des cartes"));
             while (!pileCartesJouees.estVide()) {
-                partie.getColonne(colonneDestination).ajouteCarte(pileCartesJouees.prendCarte());
+                partie.getColonne(this.getNumDestination()).ajouteCarte(pileCartesJouees.prendCarte());
             }
-            console.log("Carte " + carteJouee.getNom() + " posée sur la colonnes " + colonneDestination);
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la colonnes " + this.getNumDestination());
         }
-        if (this.destination.slice(0, 3) === "CEL") {
-            let celluleDestination = this.destination.slice(3, 4);
-            partie.getCaseLibre(celluleDestination).poseCarte(pileCartesJouees.prendCarte());
-            console.log("Carte " + carteJouee.getNom() + " posée sur la cellule " + celluleDestination);
+        if (this.getTypeDestination() === "CEL") {
+            partie.getCaseLibre(this.getNumDestination()).poseCarte(pileCartesJouees.prendCarte());
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la cellule " + this.getNumDestination());
         }
-        if (this.destination.slice(0, 3) === "PIL") {
-            let pileDestination = this.destination.slice(3, 4);
-            partie.getPile(pileDestination).ajouteCarte(pileCartesJouees.prendCarte());
-            console.log("Carte " + carteJouee.getNom() + " posée sur la pile " + pileDestination);
+        if (this.getTypeDestination() === "PIL") {
+            partie.getPile(this.getNumDestination()).ajouteCarte(pileCartesJouees.prendCarte());
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la pile " + this.getNumDestination());
         }
-
-    }
-
-    recupPileCartesJouees(partie, colonneOrigine) {
-        // TODO ici on va gérer s'il y a plusieurs cartes
-        let n = 1;
-        let pileCartesJouees = new PileDeCartes();
-        do {
-            pileCartesJouees.ajouteCarte(partie.getColonne(colonneOrigine).prendCarte());
-            if (typeof (pileCartesJouees.getCarte()) !== 'undefined') {
-                console.debug("Carte " + n + " : ajoutée " + pileCartesJouees.getCarte().getNom() + "colonnes " + colonneOrigine);
-            }
-            n++;
-        }
-        while (!pileCartesJouees.getCarte().isEquivalent(this.carte) && n < 50)
-        return pileCartesJouees;
+        partie.listeDesCoups.addCoup(this);
     }
 
     annuler(partie) {
@@ -198,8 +279,8 @@ class Coup {
                 break;
         }
 
-        let elementOrigine = this.origine.slice(0, 3);
-        let numeroOrigine = this.origine.slice(3, 4);
+        let elementOrigine = this.getTypeOrigine();
+        let numeroOrigine = this.getNumOrigine();
 
         // Si la carte vient d'une colonne, on la remet dans la colonne
         switch (elementOrigine) {
@@ -215,15 +296,4 @@ class Coup {
         }
     }
 
-    isEquivalent(coup) {
-        return this.carte.isEquivalent(coup.carte) && this.origine === coup.origine && this.destination === coup.destination;
-    }
-
-    toString() {
-        let carte = " pas de carte";
-        if (typeof this.carte !== 'undefined') {
-            carte = this.carte.getNom();
-        }
-        return "Coup : " + carte + " de " + this.origine + " vers " + this.destination;
-    }
 }

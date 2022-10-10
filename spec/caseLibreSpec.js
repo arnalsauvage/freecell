@@ -14,11 +14,6 @@ describe("Suite de tests CaseLibre.js", function() {
         expect(maCaseLibre.poseCarte(carteAsDeCoeur)).toEqual(false);
     });
 
-    it("Test des fonctions poserCarte : une seul carte possible", function() {
-        maCaseLibre.poseCarte(carteAsDeCoeur);
-        expect(maCaseLibre.poseCarte(carteAsDeCoeur)).toEqual(false);
-    });
-
     it("Test de la fonction prendCarte", function() {
         maCaseLibre.poseCarte(carteAsDeCoeur);
         expect(maCaseLibre.prendCarte()).toEqual(carteAsDeCoeur);

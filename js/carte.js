@@ -1,4 +1,4 @@
-class Carte {
+    class Carte {
 
     constructor(valeur, couleur) {
         this.setValeur(valeur);
@@ -9,7 +9,7 @@ class Carte {
         maValeur = parseInt(maValeur);
         if ((maValeur > 0) && (maValeur < 14)) {
             this.valeur = maValeur;
-                console.debug("Valeur " + maValeur + " initialisée");
+                console.log("Valeur " + maValeur + " initialisée");
         } else {
                 console.debug("/!\ -- Erreur, valeur " + maValeur + " non autorisée dans carte.js");
         }
@@ -181,6 +181,6 @@ class Carte {
     }
 
     getNomCourt() {
-        return " " + this.getNomCourtFigure() + " " + this.getIconeCouleur();
+        return this.getNomCourtFigure() + " " + this.getIconeCouleur();
     }
 }

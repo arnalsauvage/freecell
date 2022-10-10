@@ -1,5 +1,4 @@
 class CaseLibre {
-
     constructor() {
         this.carte = null;
     }
@@ -12,13 +11,13 @@ class CaseLibre {
             return false;
     }
 
+    getCarte() {
+        return this.carte;
+    }
+
     prendCarte() {
         let laCarte = this.carte;
         this.carte = null;
         return laCarte;
-    }
-
-    getCarte() {
-        return this.carte;
     }
 }
