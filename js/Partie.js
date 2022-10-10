@@ -122,7 +122,7 @@ class Partie {
     // ou si elle est sur une case libre.
     isCarteCliquable(carteAjuger) {
         console.debug("Partie.js - isCarteCliquable - carte a juger " + carteAjuger.getNom());
-        if (carteAjuger == null) {
+        if (carteAjuger === null) {
             console.debug("Partie.js - isCarteCliquable - carte a juger null");
             return false;
         }
@@ -185,37 +185,6 @@ class Partie {
 
     cartePeutMonterSurUneColonne(carte) {
         console.debug("carte peut monter sur une colonne ? " + carte.valeur + " " + carte.couleur);
-        for (let i = 1; i <= 8; i++) {
-            let colonne = this.getColonne(i);
-            if (colonne.getCarte() == null || carte.peutPoserSur(colonne.getCarte())) {
-                return i;
-            }
-        }
-        return 0;
-    }
-
-    cartePeutMonterDansLaPile(carte) {
-        let indexMaPile = this.getPileCouleurCarte(carte);
-        let clickMagiqueOk = true;
-        // Si on n'a pas l'index de la pile, c'est loupé !
-        if (indexMaPile == null) {
-            clickMagiqueOk = false;
-        }
-        // Si la pile est vide, et qu'on n'a pas un as, c'est loupé !
-        if (this.getPile(indexMaPile).getNbCartes() === 0) {
-            if (carte.valeur !== 1) {
-                clickMagiqueOk = false;
-            }
-        } else
-            // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
-        if (carte.valeur !== this.getPile(indexMaPile).getCarte().valeur + 1) {
-            clickMagiqueOk = false;
-        }
-        return clickMagiqueOk;
-    }
-
-    cartePeutMonterSurUneColonne(carte) {
-        console.debug("carte peut monter sur une colonnes ? " + carte.valeur + " " + carte.couleur);
         for (let i = 1; i <= 8; i++) {
             let colonne = this.getColonne(i);
             if (colonne.getCarte() == null || carte.peutPoserSur(colonne.getCarte())) {
@@ -554,7 +523,7 @@ class Partie {
         if (this.verifieVictoire()) {
             alert("Conglaturations :D !");
         }
-        if (this.compterLesCartesEnJeu() != 52) {
+        if (this.compterLesCartesEnJeu() !== 52) {
             alert("Il manque des cartes !");
         }
     }

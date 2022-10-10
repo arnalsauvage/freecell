@@ -191,7 +191,6 @@ class Coup {
         let destination = this.destination.slice(0, 3);
         let carteDestination;
         let numeroDest = parseInt(this.destination.slice(3, 4));
-        let numeroOrigine = this.getOrigine();
 
         // Si la destination est une colonne, on récupère la colonne visée
         switch (destination) {

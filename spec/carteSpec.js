@@ -1,5 +1,4 @@
 describe("Suite de tests Carte.js", function() {
-    let variable = "bidule";
 
     it("Test du constructeur avec new Carte(11,K)", function() {
         let maCarte = new Carte(11, "K");

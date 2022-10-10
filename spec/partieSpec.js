@@ -37,12 +37,6 @@ describe("Suite de tests Partie.js", function () {
         expect(maPartie.getColonne(1).getCarte()).toEqual(new Carte(7, "T"));
     });
 
-    it("Test de la fonction getPileCouleurCarte", function () {
-        expect(maPartie.getPileCouleurCarte(new Carte(1, "P"))).toEqual(1);
-        expect(maPartie.getPileCouleurCarte(new Carte(1, "C"))).toEqual(2);
-        expect(maPartie.getPileCouleurCarte(new Carte(1, "K"))).toEqual(3);
-        expect(maPartie.getPileCouleurCarte(new Carte(1, "T"))).toEqual(4);
-    });
 
     it("Test de la fonction getNbCasesLibres", function () {
         let maCarte;
@@ -87,7 +81,7 @@ describe("Suite de tests Partie.js", function () {
             maCarte = maPartie.getColonne(j).getCarte();
             expect(maPartie.isCarteCliquable(maCarte)).toEqual(true);
         }
-        // Given la partie non melangee
+        // Given la partie non mélangée
         // Then seul l'as de pique est cliquable
         expect(maPartie.isCarteCliquable(new Carte(1, "C"))).toEqual(false);
         expect(maPartie.isCarteCliquable(new Carte(1, "K"))).toEqual(false);

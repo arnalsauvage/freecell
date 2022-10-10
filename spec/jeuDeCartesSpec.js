@@ -1,8 +1,6 @@
 describe("Suite de tests jeuDeCartes.js", function() {
+    let monJeu;
     let maCarte;
-    let maCaseLibre;
-    let monCoup;
-    let maPartie;
 
     beforeEach(function() {
         monJeu = new JeuDeCartes ();

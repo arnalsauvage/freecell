@@ -1,5 +1,5 @@
 describe("Suite de tests position.js", function() {
-    let variable = "bidule";
+
     it("Test des fonctions constructeur getPile getNumero getIndice", function() {
         let position = new Position("COL7");
         expect(position.getPile()).toEqual("COL");
