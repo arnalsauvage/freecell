@@ -1,6 +1,9 @@
 class Position {
 
     constructor(position) {
+        if (position === null) {
+            return false;
+        }
         if (position.length > 3 && position.length <= 6) {
             this.position = position;
             this.pile = position.substring(0, 3);
@@ -38,9 +41,7 @@ class Position {
             if (this.numero < 1 || this.numero > 4) {
                 return false
             }
-
         }
         return true;
     }
-
 }

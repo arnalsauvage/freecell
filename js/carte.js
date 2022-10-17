@@ -63,7 +63,7 @@
             case "T":
                 return "Trèfle";
             default:
-                console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                console.warn("Erreur carte.js , couleur '" + this.couleur + "' non autorisée");
                 return "erreur carte.js !!!";
         }
     }
@@ -182,5 +182,9 @@
 
     getNomCourt() {
         return this.getNomCourtFigure() + " " + this.getIconeCouleur();
+    }
+
+    getNomCourtTxt() {
+        return this.getNomCourtFigure() + this.getCouleur();
     }
 }

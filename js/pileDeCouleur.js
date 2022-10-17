@@ -38,4 +38,11 @@ class PileDeCouleur extends PileDeCartes {
     getCouleur() {
         return this.couleur;
     }
+    estRouge() {
+        if (this.couleur === "C" || this.couleur === "K") {
+            return true;
+        }
+        else
+            return false;
+    }
 }
