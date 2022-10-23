@@ -196,7 +196,9 @@ class Coup {
         }
         let typeDestination = this.getTypeDestination();
         let carteDestination;
-        let numeroDest = parseInt(this.destination.slice(3, 4));
+        let numeroDest = this.getNumDestination();
+
+        let UneSeuleCarteEstBougee =  this.getTypeOrigine()=="COL" && partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) ;
 
         // Si la destination est une colonne, on récupère la colonne visée
         switch (typeDestination) {
@@ -207,7 +209,7 @@ class Coup {
                     return (this.carte.peutPoserSur(carteDestination));
                 }
                 if (this.getTypeOrigine() === "COL") {
-                    if (partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte)) {
+                    if (UneSeuleCarteEstBougee) {
                         return (this.carte.peutPoserSur(carteDestination));
                     } else {
                         let nbCartesDeplaceesOk = this.evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) >= this.recupPileCartesJouees(partie, this.getNumOrigine(), false).getNbCartes();
@@ -215,16 +217,25 @@ class Coup {
                         return (nbCartesDeplaceesOk && cartePeutSePoserSur);
                     }
                 }
-            // Si la destination est une cellule, on récupère la cellule visée
+            // Si la destination est une cellule,
             case "CEL":
-                carteDestination = partie.getCaseLibre(numeroDest).getCarte();
-                // Si la carte peut se poser sur l'autre carte, le coup est valide
-                return this.carte.peutPoserSur(carteDestination);
+                // Si une seule carte bougée, c'est ok si la case est libre
+                if (UneSeuleCarteEstBougee) {
+                    return (partie.getCaseLibre(numeroDest).getCarte()==null);
+                }
+                // Sinon ce n'est pas possible
+                else {
+                    return false;
+                }
             //            colonneDestination = partie.getCellule(this.destination.slice(3, 4));
             // Si la carte peut se poser sur l'autre carte, le coup est valide
             //          return carteJouee.peutPoserSur(colonneDestination.getCarte());
             case "PIL" :
-                // On vérifie que la carte est une carte de la couleur de la pile
+                // Si plusieurs cartes sont sélectionnées, ça ne marche pas
+                if (!partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) && this.getTypeOrigine()=="COL") {
+                    return false;
+                }
+                // Si la carte jouee n'est pas de la couleur de la pile, c'est refusé
                 let couleurPile = this.carte.getCouleurParNumero(numeroDest);
                 console.log("Coup.js - coupValable - Couleur de la pile : " + couleurPile + " carte jouée : " + this.carte.getNom() + "numero pile : " + numeroDest);
                 if (this.carte.getCouleur() !== couleurPile) {

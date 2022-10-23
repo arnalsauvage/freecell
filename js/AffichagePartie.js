@@ -69,7 +69,6 @@ class AffichagePartie {
         context.stroke();
         context.strokeStyle = 'black';
         for (let i = 0; i < 3; i++) {
-            console.error("Le tas, c'est " + tas);
             context.strokeRect(x + +i * 5, y + i * 5, this.carteLargeur - 1 - 10 * i, this.carteHauteur - 1 - 10 * i);
             context.stroke();
         }
@@ -155,10 +154,20 @@ class AffichagePartie {
         // draw the cards
         let x = (numero - 1) * this.carteLargeur * largeurCartePlusEspace;
         let y = 0;
+
         for (let i = 0; i < colonne.getNbCartes(); i++) {
-            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne");
+            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", false);
+            // Si la carte peut monter dans la pile, on la met en jaune
             if ((i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterDansLaPile(colonne.getCarteN(i))) {
-                this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", true);
+                this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", "yellow");
+            }
+            // Sinon, si elle peut aller sur une autre colonne non vide, on la met en vert
+            else {
+                for (let j = 1; j < 9; j++) {
+                    if ((colonne.getNbCartes() > 0) && (j!==i) && (i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterSurUneColonne(colonne.getCarteN(i))) {
+                        this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", "lightgreen");
+                    }
+                }
             }
             y += this.carteHauteurTete;
         }
@@ -190,9 +199,17 @@ class AffichagePartie {
         let carte = caseLibre.getCarte();
         if (carte != null) {
             this.dessineCarte(carte, x, y, "CaseLibre", false);
-            if (this.partie.cartePeutMonterDansLaPile(carte) || this.partie.cartePeutMonterSurUneColonne(carte) > 0) {
-                this.dessineCarte(carte, x, y, "CaseLibre", true);
+            let couleur = "";
+            if (this.partie.cartePeutMonterSurUneColonne(carte) > 0){
+                couleur = "lightgreen";
             }
+            if (this.partie.cartePeutMonterDansLaPile(carte) ) {
+                couleur = "yellow";
+            }
+            if (couleur !== ""){
+                this.dessineCarte(carte, x, y, "CaseLibre", couleur);
+            }
+
         } else {
             console.log("carte case libre " + numero + " vide");
             this.dessineCarteVide("motif", x, y, "CaseLibre");
@@ -216,6 +233,28 @@ class AffichagePartie {
     afficheCartesSuivantesPiles() {
         for (let i = 1; i <= 4; i++) {
             this.afficheCarteSuivantePile(i);
+        }
+    }
+
+    jouer(coup) {
+        coup.jouer(this.partie);
+        this.ajouteHistorique(coup.shortDesc() + " ");
+        this.affiche();
+        this.partie.coup = new Coup();
+    }
+
+
+    joueCarteAmonter() {
+        let carte;
+        for (let i = 1; i <= 8; i++) {
+            carte = this.partie.getColonne(i).getCarte();
+            if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte) ) {
+                let numeroPile = this.partie.getPileCouleurCarte(carte);
+                let coup = new Coup(carte, "COL" + i, "PIL" + numeroPile);
+                console.log(" Mon coup : carte " + carte + " coup : " + coup.toString())        ;
+                this.jouer(coup);
+                return;
+            }
         }
     }
 
@@ -311,10 +350,7 @@ class AffichagePartie {
             if (this.partie.coup.coupValable(this.partie)) {
                 this.ajouteHistorique(this.partie.coup.shortDesc() + " ");
             }
-            this.partie.coup.jouer(partie);
-            console.log("coup vers colonnes, carte :  " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + " depuis " + this.partie.coup.origine + " vers : " + this.partie.coup.destination);
-            this.partie.coup = new Coup();
-            this.affiche();
+            this.jouer(partie.coup);
         }
     }
 
@@ -389,9 +425,7 @@ class AffichagePartie {
             this.partie.coup.destination = "PIL" + numeroPile;
             console.log("coup : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + ' ' + this.partie.coup.origine + " " + this.partie.coup.destination);
         }
-        this.partie.coup.jouer(this);
-        this.partie.coup = new Coup();
-        this.affiche();
+        this.jouer(partie.coup);
     }
 
     onClickCaseLibre() {
@@ -449,9 +483,7 @@ class AffichagePartie {
                 console.log("destination enregistrée : " + "CEL" + numeroCaseLibre);
             }
             console.log("coup lâché sur CEL carte : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + " origine :" + this.partie.coup.origine + " destination : " + this.partie.coup.destination);
-            this.partie.coup.jouer(this.partie);
-            this.partie.coup = new Coup();
-            this.affiche();
+            this.jouer (this.partie.coup);
         }
     }
 

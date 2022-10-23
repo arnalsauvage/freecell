@@ -208,15 +208,17 @@ describe("Suite de tests Coup.js", function () {
     });
 
     it("Test de la fonction coupValable", function () {
-        // D'une colonne vers l'autre
+        // D'une colonne vers l'autre Roi de carreau de COL2 vers COL1 refusé
         maCarte = new Carte(13, "K");
         monCoup = new Coup(maCarte, "COL2", "COL1");
         expect(monCoup.coupValable(maPartie)).toEqual(false);
+
+        // 6 de carreau de col3 vers COL1 ok !
         maCarte = new Carte(6, "K");
         monCoup = new Coup(maCarte, "COL3", "COL1");
         expect(monCoup.coupValable(maPartie)).toEqual(true);
 
-        // D'une colonne vers une cellule libre ==> ok
+        // D'une colonne vers une cellule libre ==> ok roi de carreau de COL2 vers CEL1 ok
         maCarte = new Carte(13, "K");
         monCoup = new Coup(maCarte, "COL2", "CEL1");
         expect(monCoup.coupValable(maPartie)).toEqual(true);

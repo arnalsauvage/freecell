@@ -33,8 +33,6 @@ class Partie {
         this.casesLibres[2] = new CaseLibre();
         this.casesLibres[3] = new CaseLibre();
         this.casesLibres[4] = new CaseLibre();
-
-        this.log = 1; // 1 : debug , 2: info, 3 : warning , 4 : error
     }
 
     distribue(melanger = true) {
