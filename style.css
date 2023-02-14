@@ -5,7 +5,7 @@
     border: 0;
     border-spacing: 0;
     box-sizing: border-box;
-    background: green;
+    background: #00c400;
 }
 
 button {
@@ -36,7 +36,7 @@ button {
 }
 
 h1 {
-    color : white;
+    color : black;
     font-size: 4vh;
 }
 

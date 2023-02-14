@@ -57,6 +57,16 @@ donne le nom de la couleur de la carte (pique coeur carreau trefle)
 
 ## Framework de test Jasmine
 
-npx jasmine-browser-runner serve
+- pour installer : 
 
+`npm install --save-dev jasmine`
+
+- pour initialiser :
+`npx jasmine init`
+
+- pour lancer dans le navigateur web : 
+lancer la page specRunner.html
+
+Exemple de doc :
+https://dev.to/aurelkurtula/unit-testing-with-vanilla-javascript-the-very-basics-7jm
 
