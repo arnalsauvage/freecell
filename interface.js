@@ -73,6 +73,15 @@ function nouvellePartieNonMelangee() {
     affichagePartie.affiche();
 }
 
+function importePartie() {
+    let txt = document.getElementById("zonetexteimport").value;
+    partie = new Partie();
+    let monimport = new Import();
+    monimport.import(txt, partie);
+    affichagePartie = new AffichagePartie(partie);
+    affichagePartie.affiche();
+}
+
 // Récupérer le bouton
 const button = document.getElementById("btnNouvellePartie");
 
