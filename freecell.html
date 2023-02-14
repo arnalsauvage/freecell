@@ -8,16 +8,24 @@
 </head>
 
 <body>
-    <h1>FreeCell 📕 </h1>
 
-    <canvas id="canvasCaseLibre" width="500" height="180" style="border:1px solid #000000;" onclick="affichagePartie.onClickCaseLibre()"></canvas>
-    <canvas id="canvasPile" width="500" height="180" style="border:1px solid #000000;" onclick="affichagePartie.onClickPile()"></canvas>
+<header>
+    <h1>FreeCell 📕 </h1>
+</header>
+
+<main>
+    <canvas id="canvasCaseLibre" width="500" height="180" style="border:1px solid #000000;"
+            onclick="affichagePartie.onClickCaseLibre()"></canvas>
+    <canvas id="canvasPile" width="500" height="180" style="border:1px solid #000000;"
+            onclick="affichagePartie.onClickPile()"></canvas>
     <button onclick="affichagePartie.afficheCartesSuivantesPiles();">nexts</button>
     <button onclick="affichagePartie.joueCarteAmonter();">monte !</button>
-    <canvas id="canvasColonne" width="1000" height="500" style="border:1px solid #000000;" onclick="affichagePartie.onClickColonne()">
+    <canvas id="canvasColonne" width="1000" height="500" style="border:1px solid #000000;"
+            onclick="affichagePartie.onClickColonne()">
     </canvas>
 
-    <label for="chercheCarte">Cherche :</label><input type="text" id="chercheCarte" placeholder="Cherche carte" onkeyup="chercheCarte()">
+    <label for="chercheCarte">Cherche :</label><input type="text" id="chercheCarte" placeholder="Cherche carte"
+                                                      onkeyup="chercheCarte()">
 
     <button id="btnNouvellePartie">Nouvelle partie</button>
     <button id="btnPartieNonMelangee" onclick="nouvellePartieNonMelangee();">Partie non melangee</button>
@@ -26,21 +34,20 @@
     <button id="button-aide-raz" onclick="razAide()">⚐ R.A.Z Aide</button>
     <button id="button-aide-candidatsUniques" onclick="montreLesCandidatsUniques()"> ▦ Cartes libres</button>
 
-    <label for ="historique">Historique</label>
-       <textarea cols="9" id="historique" name="historique" rows="9">Historique</textarea>
+    <label for="historique">Historique</label>
+    <textarea cols="9" id="historique" name="historique" rows="9">Historique</textarea>
 
-    <label for="zonetexteexport"> <button id="zonetexteexport" onclick="freecellVersTexte()">FreeCell vers texte 📥 </button></label>
-    <textarea cols="9" id="zonetexteimport" name="saisie" rows="9">
-        AT XC 8K VC 6P VP DK
+    <button id="zonetexteexport" onclick="freecellVersTexte()">FreeCell vers texte 📥</button>
+    <label for="zonetexteimport">Importe une partie :</label> <textarea cols="9" id="zonetexteimport" name="saisie"
+                                                                        rows="9">AT XC 8K VC 6P VP DK
 6T 4C XK 3C DC 7C XT
 DP 2K 3P RP 2T 4P 4K
 9T 5C VT 5T 5P 2P 8T
 3T 6C AK XP VK RC
 2C 8C 9K RK 3K AC
 9P 7T DT 7P RT 6K
-7K 4T 5K AP 8P 9C
-    </textarea>
-    <button id="button-texte-vers-partie" onclick="importePartie()">Texte vers Freecell 📤 </button>
+7K 4T 5K AP 8P 9C</textarea>
+    <button id="button-texte-vers-partie" onclick="importePartie()">Texte vers Freecell 📤</button>
     <script src="js/jquery.min.js"></script>
     <script src="js/carte.js"></script>
     <script src="js/caseLibre.js"></script>
@@ -54,6 +61,13 @@ DP 2K 3P RP 2T 4P 4K
     <script src="js/AffichagePartie.js"></script>
     <script src="interface.js"></script>
     <script src="js/Import.js"></script>
+
+</main>
+
+<footer>
+    <p>📕 FreeCell</p>
+</footer>
+
 </body>
 
 </html>
