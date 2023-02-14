@@ -7,16 +7,7 @@ class Partie {
 
         this.coup = new Coup();
         this.listeDesCoups = new ListeCoups();
-
-        this.colonnes = [];
-        this.colonnes[1] = new PileDeCartes();
-        this.colonnes[2] = new PileDeCartes();
-        this.colonnes[3] = new PileDeCartes();
-        this.colonnes[4] = new PileDeCartes();
-        this.colonnes[5] = new PileDeCartes();
-        this.colonnes[6] = new PileDeCartes();
-        this.colonnes[7] = new PileDeCartes();
-        this.colonnes[8] = new PileDeCartes();
+        this.initColonnes();
 
         this.pileDePique = new PileDeCouleur("P");
         this.pileDeTrefle = new PileDeCouleur("T");
@@ -33,6 +24,18 @@ class Partie {
         this.casesLibres[2] = new CaseLibre();
         this.casesLibres[3] = new CaseLibre();
         this.casesLibres[4] = new CaseLibre();
+    }
+
+    initColonnes() {
+        this.colonnes = [];
+        this.colonnes[1] = new PileDeCartes();
+        this.colonnes[2] = new PileDeCartes();
+        this.colonnes[3] = new PileDeCartes();
+        this.colonnes[4] = new PileDeCartes();
+        this.colonnes[5] = new PileDeCartes();
+        this.colonnes[6] = new PileDeCartes();
+        this.colonnes[7] = new PileDeCartes();
+        this.colonnes[8] = new PileDeCartes();
     }
 
     distribue(melanger = true) {
