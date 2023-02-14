@@ -38,7 +38,7 @@ class Import {
         if (text.length === 3) {
             // si le texte commence par "10", on le traite comme une carte de valeur 10
             if (text.slice(0, 2) === "10") {
-                color = text[2];
+                color = text[2].toUpperCase();
                 value = 10;
             }
         } else if (text.length === 2) {
@@ -52,7 +52,7 @@ class Import {
                 value = 1;
             }
             if (this.format_choisi === "FR") {
-
+                console.log("Format français");
                 if (value === "V") {
                     value = 11;
                 } else if (value === "D") {
@@ -65,6 +65,8 @@ class Import {
                     value = parseInt(value);
                 }
             } else {
+                console.log("Format anglais");
+
                 if (value === "J") {
                     value = 11;
                 } else if (value === "Q") {
@@ -75,9 +77,10 @@ class Import {
                     value = parseInt(value);
                 }
             }
-            color = text[1];
+            color = text[1].toUpperCase();
         }
         if (this.format_choisi !== "FR") {
+
             // Si color = S (pade), on le convertit en P
             if (color === "S") {
                 color = "P";

@@ -90,7 +90,7 @@ class AffichagePartie {
         }
     }
 
-    dessineTextePileVide(pile,x,y) {
+    dessineTextePileVide(pile, x, y) {
         let canvas = document.getElementById("canvasPile");
         let context = canvas.getContext("2d");
         // texte de la carte
@@ -102,7 +102,7 @@ class AffichagePartie {
         context.font = "" + this.carteHauteurTete * 2 + "px Arial";
 
         const carte = new Carte(1, pile.couleur);
-        context.fillText(carte.getIconeCouleur(), x + largeurDesCartes /8   , y + this.carteHauteurTete / 2);
+        context.fillText(carte.getIconeCouleur(), x + largeurDesCartes / 8, y + this.carteHauteurTete / 2);
     }
 
     getContext(carte) {
@@ -164,7 +164,7 @@ class AffichagePartie {
             // Sinon, si elle peut aller sur une autre colonne non vide, on la met en vert
             else {
                 for (let j = 1; j < 9; j++) {
-                    if ((colonne.getNbCartes() > 0) && (j!==i) && (i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterSurUneColonne(colonne.getCarteN(i))) {
+                    if ((colonne.getNbCartes() > 0) && (j !== i) && (i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterSurUneColonne(colonne.getCarteN(i))) {
                         this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", "lightgreen");
                     }
                 }
@@ -185,7 +185,7 @@ class AffichagePartie {
         } else {
 
             this.dessineCarteVide("pile", x, y, "Pile");
-            this.dessineTextePileVide(pile, x + largeurDesCartes/5, y+hauteurDesCartes/3);
+            this.dessineTextePileVide(pile, x + largeurDesCartes / 5, y + hauteurDesCartes / 3);
 
         }
     }
@@ -200,13 +200,13 @@ class AffichagePartie {
         if (carte != null) {
             this.dessineCarte(carte, x, y, "CaseLibre", false);
             let couleur = "";
-            if (this.partie.cartePeutMonterSurUneColonne(carte) > 0){
+            if (this.partie.cartePeutMonterSurUneColonne(carte) > 0) {
                 couleur = "lightgreen";
             }
-            if (this.partie.cartePeutMonterDansLaPile(carte) ) {
+            if (this.partie.cartePeutMonterDansLaPile(carte)) {
                 couleur = "yellow";
             }
-            if (couleur !== ""){
+            if (couleur !== "") {
                 this.dessineCarte(carte, x, y, "CaseLibre", couleur);
             }
 
@@ -247,13 +247,16 @@ class AffichagePartie {
     joueCarteAmonter() {
         let carte;
         for (let i = 1; i <= 8; i++) {
-            carte = this.partie.getColonne(i).getCarte();
-            if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte) ) {
-                let numeroPile = this.partie.getPileCouleurCarte(carte);
-                let coup = new Coup(carte, "COL" + i, "PIL" + numeroPile);
-                console.log(" Mon coup : carte " + carte + " coup : " + coup.toString())        ;
-                this.jouer(coup);
-                return;
+            // Si la colonne n'est pas vide
+            if (!this.partie.getColonne(i).estVide()) {
+                carte = this.partie.getColonne(i).getCarte();
+                if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte)) {
+                    let numeroPile = this.partie.getPileCouleurCarte(carte);
+                    let coup = new Coup(carte, "COL" + i, "PIL" + numeroPile);
+                    console.log(" Mon coup : carte " + carte + " coup : " + coup.toString());
+                    this.jouer(coup);
+                    return;
+                }
             }
         }
     }
@@ -483,7 +486,7 @@ class AffichagePartie {
                 console.log("destination enregistrée : " + "CEL" + numeroCaseLibre);
             }
             console.log("coup lâché sur CEL carte : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + " origine :" + this.partie.coup.origine + " destination : " + this.partie.coup.destination);
-            this.jouer (this.partie.coup);
+            this.jouer(this.partie.coup);
         }
     }
 
