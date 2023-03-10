@@ -14,7 +14,7 @@ class Coup {
     }
 
     // Format origine : COL / CEL / PIL pour colonne celluleLibre ou pile
-    // 1 caractère : n° de la colonne cel ou pile
+    // 1 caractère : n° de la colonne cel ou pile à partir de 1
 
     setOrigine(origine) {
         this.origine = this.verifieOrigineDest(origine);
@@ -44,18 +44,22 @@ class Coup {
 
         switch (trigramme) {
             case "COL":
-                max = 8;
+                max = 7;
                 break;
             case "CEL":
             case "PIL":
-                max = 4;
+                max = 3;
                 break;
             default :
                 numero = 0;
         }
-        if (numero > 0 && numero <= max) {
+        if (numero >= 0 && numero <= max) {
+            console.log ("OrigineDest : " + origineDest.slice(0,4));
             return origineDest.slice(0, 4);
         } else {
+            // Afficher erreur
+                console.error("Erreur : origineDest : " + origineDest.slice(0,4) + " n'est pas valide");
+
             return "";
         }
     }
@@ -112,7 +116,6 @@ class Coup {
         return this.carte.getNomCourtTxt() + "-" + this.origine + "-" + this.destination;
     }
 
-
     // evalue le nombre de cartes deplacables selon la colonne jouée
     // (sans tenir compte des cartes dans la colonne jouée)
     evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) {
@@ -138,33 +141,34 @@ class Coup {
         return nbCartesDeplacables;
     }
 
-    // La méthode prend sur la colonne passe en parametre, la piles des cartes
+    // La méthode prend sur la colonne passée en parametre, la pile des cartes
     // jusqu'à la carte this.carte, un booléen indique si on enlève les cartes de la colonne.
-    recupPileCartesJouees(partie, numeroColonne, enleverVraimentLEsCartesDeLaColonne) {
+    recupPileCartesJouees(partie, numeroColonneMachine, enleverVraimentLesCartesDeLaColonne) {
+        // La machine compte les colonnes à partir de zéro, l'humain à partir de 1
+        let numeroColonneHumain = numeroColonneMachine + 1;
         let pileCartesJouees = new PileDeCartes();
         if (this.carte == null)
             return pileCartesJouees;
-        let nombreDeCartesDansColonne = partie.getColonne(numeroColonne).getNbCartes();
+        let nombreDeCartesDansColonne = partie.getColonne(numeroColonneMachine).getNbCartes();
         let carteParcourue;
         let n = 1;
-        console.log("Coup.js - recupePileCartesJouees - carte jouée : " + this.carte.getNom() + ", colonne " + numeroColonne);
+        console.log("Coup.js - recupePileCartesJouees - carte jouée : " + this.carte.getNom() + ", colonne " + numeroColonneHumain);
         do {
-            console.debug("Coup.js - recupePileCartesJouees - N " + n + " et nbCartes :  " + nombreDeCartesDansColonne + ", colonne " + numeroColonne);
-            if (enleverVraimentLEsCartesDeLaColonne) {
-                carteParcourue = partie.getColonne(numeroColonne).prendCarte();
-                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : prise " + carteParcourue.getNom() + " colonne " + numeroColonne);
+            console.debug("Coup.js - recupePileCartesJouees - N " + n + " et nbCartes :  " + nombreDeCartesDansColonne + ", colonne " + numeroColonneHumain);
+            if (enleverVraimentLesCartesDeLaColonne) {
+                carteParcourue = partie.getColonne(numeroColonneMachine).prendCarte();
+                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : prise " + carteParcourue.getNom() + " colonne " + numeroColonneHumain);
             } else {
-                carteParcourue = partie.getColonne(numeroColonne).getCarteN(nombreDeCartesDansColonne - n);
-                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : copiée " + carteParcourue.getNom() + " colonne " + numeroColonne);
+                carteParcourue = partie.getColonne(numeroColonneMachine).getCarteN(nombreDeCartesDansColonne - n);
+                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : copiée " + carteParcourue.getNom() + " colonne " + numeroColonneHumain);
             }
             pileCartesJouees.ajouteCarte(carteParcourue);
             if (typeof (pileCartesJouees.getCarte()) !== 'undefined') {
-                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : ajoutée " + carteParcourue.getNom() + " colonne " + numeroColonne);
+                console.debug("Coup.js - recupePileCartesJouees - Carte " + n + " : ajoutée " + carteParcourue.getNom() + " colonne " + numeroColonneHumain);
             }
             n++;
         }
         while (typeof carteParcourue !== 'undefined' && !carteParcourue.isEquivalent(this.carte) && n < 50)
-
         return pileCartesJouees;
     }
 
@@ -172,89 +176,97 @@ class Coup {
         if (this.carte == null || this.origine.length < 4) {
             return false;
         }
-
+    let numOrigineMachine = this.getNumOrigine();
+    let numOrigineHumain = numOrigineMachine + 1;
         if (this.getTypeOrigine() === "COL") {
-            if (!partie.getColonne(this.getNumOrigine()).contientCarte(this.carte)) {
+            if (!partie.getColonne(numOrigineMachine).contientCarte(this.carte)) {
                 return false;
             }
-            console.debug("Coup.js - controleCarteJoueeEtOrigine - Carte jouée : " + this.carte.getNom() + "colonnes " + this.getNumOrigine());
+            console.debug("Coup.js - controleCarteJoueeEtOrigine - Carte jouée : " + this.carte.getNom() + " colonnes " + numOrigineHumain);
         }
         if (this.getTypeOrigine() === "CEL") {
-            let carteJouee = partie.getCaseLibre(this.getNumOrigine()).getCarte();
+            let carteJouee = partie.getCaseLibre(numOrigineMachine).getCarte();
             if (!this.carte.isEquivalent(carteJouee)) {
                 return false;
             }
-            console.log("Coup.js - controleCarteJoueeEtOrigineCarte jouée : " + carteJouee.getNom() + "cellule " + this.getNumOrigine());
+            console.log("Coup.js - controleCarteJoueeEtOrigine - Carte jouée : " + carteJouee.getNom() + " Cellule " + numOrigineHumain);
         }
         return (partie.isCarteCliquable(this.carte));
+    }
+
+
+    coupValableSurColonne(partie, numeroDest) {
+        let carteDestination = partie.getColonne(numeroDest).getCarte();
+        // Si la carte peut se poser sur l'autre carte, le coup est valide
+        if (this.getTypeOrigine() === "CEL") {
+            return (this.carte.peutPoserSur(carteDestination));
+        }
+        if (this.getTypeOrigine() === "COL") {
+            let UneSeuleCarteEstBougee =  partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) ;
+            if (UneSeuleCarteEstBougee) {
+                return (this.carte.peutPoserSur(carteDestination));
+            } else {
+                let nbCartesDeplaceesOk = this.evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) >= this.recupPileCartesJouees(partie, this.getNumOrigine(), false).getNbCartes();
+                let cartePeutSePoserSur = this.carte.peutPoserSur(carteDestination);
+                return (nbCartesDeplaceesOk && cartePeutSePoserSur);
+            }
+        }
     }
 
     coupValable(partie) {
         // on controle deja la validité de la carte jouée et l'origine
         if (!this.controleCarteJoueeEtOrigine(partie)) {
+            console.log("Coup.js - coupValable - carte jouée ou origine invalide");
             return false;
         }
         let typeDestination = this.getTypeDestination();
-        let carteDestination;
         let numeroDest = this.getNumDestination();
-
-        let UneSeuleCarteEstBougee =  this.getTypeOrigine()=="COL" && partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) ;
 
         // Si la destination est une colonne, on récupère la colonne visée
         switch (typeDestination) {
             case "COL" :
-                carteDestination = partie.getColonne(numeroDest).getCarte();
-                // Si la carte peut se poser sur l'autre carte, le coup est valide
-                if (this.getTypeOrigine() === "CEL") {
-                    return (this.carte.peutPoserSur(carteDestination));
-                }
-                if (this.getTypeOrigine() === "COL") {
-                    if (UneSeuleCarteEstBougee) {
-                        return (this.carte.peutPoserSur(carteDestination));
-                    } else {
-                        let nbCartesDeplaceesOk = this.evalueNombreDeCartesDeplacablesSelonColonneJouee(partie) >= this.recupPileCartesJouees(partie, this.getNumOrigine(), false).getNbCartes();
-                        let cartePeutSePoserSur = this.carte.peutPoserSur(carteDestination);
-                        return (nbCartesDeplaceesOk && cartePeutSePoserSur);
-                    }
-                }
+                return this.coupValableSurColonne(partie, numeroDest);
+
             // Si la destination est une cellule,
             case "CEL":
+                let UneSeuleCarteEstBougee =  this.getTypeOrigine()==="COL" && partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) ;
+                let caseEstLibre = partie.getCaseLibre(numeroDest).estLibre();
+                console.log("Coup.js - coupValable - UneSeuleCarteEstBougee : " + UneSeuleCarteEstBougee + " caseEstLibre : " + caseEstLibre);
                 // Si une seule carte bougée, c'est ok si la case est libre
-                if (UneSeuleCarteEstBougee) {
-                    return (partie.getCaseLibre(numeroDest).getCarte()==null);
-                }
-                // Sinon ce n'est pas possible
-                else {
-                    return false;
-                }
+                return (UneSeuleCarteEstBougee && caseEstLibre);
+
             //            colonneDestination = partie.getCellule(this.destination.slice(3, 4));
             // Si la carte peut se poser sur l'autre carte, le coup est valide
             //          return carteJouee.peutPoserSur(colonneDestination.getCarte());
             case "PIL" :
-                // Si plusieurs cartes sont sélectionnées, ça ne marche pas
-                if (!partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) && this.getTypeOrigine()=="COL") {
-                    return false;
-                }
-                // Si la carte jouee n'est pas de la couleur de la pile, c'est refusé
-                let couleurPile = this.carte.getCouleurParNumero(numeroDest);
-                console.log("Coup.js - coupValable - Couleur de la pile : " + couleurPile + " carte jouée : " + this.carte.getNom() + "numero pile : " + numeroDest);
-                if (this.carte.getCouleur() !== couleurPile) {
-                    console.log("Coup.js - coupValable - Refus du coup : couleur attendue : " + this.carte.getCouleur());
-                    return false;
-                }
-                // Si la pile est vide, on vérifie que la carte est un 1
-                if (partie.getPile(numeroDest).estVide()) {
-                    console.log("Coup.js - coupValable - Pile vide");
-                    return this.carte.getValeur() === 1;
-                }
-                // Si la pile n'est pas vide, on vérifie que la carte est la suivante de la carte du dessus de la pile.
-                return (this.carte.getValeur() === partie.getPile(numeroDest).getCarte().getValeur() + 1);
+                return this.coupValableVersPile(partie, numeroDest);
         }
+    }
+
+    coupValableVersPile(partie, numeroDest) {
+        // Si plusieurs cartes sont sélectionnées, ça ne marche pas
+        if (!partie.getColonne(this.getNumOrigine() ).getCarte().isEquivalent(this.carte) && this.getTypeOrigine() === "COL") {
+            return false;
+        }
+        // Si la carte jouee n'est pas de la couleur de la pile, c'est refusé
+        let couleurPile = this.carte.getCouleurParNumero(numeroDest);
+        console.log("Coup.js - coupValable - Couleur de la pile : " + couleurPile + " carte jouée : " + this.carte.getNom() + "numero pile : " + numeroDest);
+        if (this.carte.getCouleur() !== couleurPile) {
+            console.log("Coup.js - coupValable - Refus du coup : couleur attendue : " + this.carte.getCouleur());
+            return false;
+        }
+        // Si la pile est vide, on vérifie que la carte est un 1
+        if (partie.getPile(numeroDest).estVide()) {
+            console.log("Coup.js - coupValable - Pile vide");
+            return this.carte.getValeur() === 1;
+        }
+        // Si la pile n'est pas vide, on vérifie que la carte est la suivante de la carte du dessus de la pile.
+        return (this.carte.getValeur() === partie.getPile(numeroDest).getCarte().getValeur() + 1);
     }
 
     jouer(partie) {
         if (!this.coupValable(partie)) {
-            console.log("Coup.js - jouer - Coup invalide !!!");
+            console.log("Coup.js - jouer - Coup invalide !!!    " + this.toString() + "");
             return;
         }
         let carteJouee = this.carte;
@@ -274,15 +286,15 @@ class Coup {
             while (!pileCartesJouees.estVide()) {
                 partie.getColonne(this.getNumDestination()).ajouteCarte(pileCartesJouees.prendCarte());
             }
-            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la colonnes " + this.getNumDestination());
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la colonne " + (1+this.getNumDestination()));
         }
         if (this.getTypeDestination() === "CEL") {
             partie.getCaseLibre(this.getNumDestination()).poseCarte(pileCartesJouees.prendCarte());
-            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la cellule " + this.getNumDestination());
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la cellule " + (1+this.getNumDestination()));
         }
         if (this.getTypeDestination() === "PIL") {
             partie.getPile(this.getNumDestination()).ajouteCarte(pileCartesJouees.prendCarte());
-            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la pile " + this.getNumDestination());
+            console.log("Coups.js - jouer - Carte " + carteJouee.getNom() + " posée sur la pile " + (1+this.getNumDestination()));
         }
         partie.listeDesCoups.addCoup(this);
     }
@@ -290,7 +302,6 @@ class Coup {
     annuler(partie) {
         let elementDest = this.getTypeDestination();
         let numeroDest = this.getNumDestination();
-
         let elementOrigine = this.getTypeOrigine();
         let numeroOrigine = this.getNumOrigine();
 
@@ -301,7 +312,6 @@ class Coup {
             console.log("Coups.js - annuler - Cartes multiples de col à col ");
             let pileDeCartes = this.recupPileCartesJouees(partie, numeroDest, true);
             do {
-
                 console.log("Coups.js - annuler - ajout carte  " + pileDeCartes.getCarte());
                 partie.getColonne(numeroOrigine).ajouteCarte(pileDeCartes.prendCarte());
             }
@@ -309,9 +319,7 @@ class Coup {
             return;
         }
 
-
         // Si la carte est arrivée dans une colonne, on la reprend dans la colonne
-
         switch (elementDest) {
             case "COL" :
                 this.carte = partie.getColonne(numeroDest).prendCarte();
@@ -323,7 +331,6 @@ class Coup {
                 this.carte = partie.getPile(numeroDest).prendCarte();
                 break;
         }
-
 
         // Si la carte vient d'une colonne, on la remet dans la colonne
         switch (elementOrigine) {
@@ -338,5 +345,4 @@ class Coup {
                 break;
         }
     }
-
 }

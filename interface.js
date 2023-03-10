@@ -1,5 +1,5 @@
 const button1 = document.getElementById("button-aide-1");
-let partie = new Partie();
+let partie = new PartieSolitaire();
 let affichagePartie = new AffichagePartie(partie);
 partie.demarrePartie();
 affichagePartie.affiche();
@@ -7,7 +7,7 @@ affichagePartie.affiche();
 const COULEUR_CARTE_RECHERCHEE = "red"; // Couleur de la carte recherchée
 
 function demarrePartie() {
-    partie = new Partie();
+    partie = new PartieSolitaire();
     partie.demarrePartie();
     affichagePartie = new AffichagePartie(partie);
     affichagePartie.affiche();
@@ -67,7 +67,7 @@ function metCarteEnSurbrillance(carte) {
 
 function nouvellePartieNonMelangee() {
     let txt = document.getElementById("chercheCarte").value;
-    partie = new Partie();
+    partie = new PartieSolitaire();
     partie.distribue(false);
     affichagePartie = new AffichagePartie(partie);
     affichagePartie.affiche();
@@ -75,7 +75,7 @@ function nouvellePartieNonMelangee() {
 
 function importePartie() {
     let txt = document.getElementById("zonetexteimport").value;
-    partie = new Partie();
+    partie = new PartieSolitaire();
     let monimport = new Import();
     monimport.import(txt, partie);
     affichagePartie = new AffichagePartie(partie);

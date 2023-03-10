@@ -1,3 +1,5 @@
+const NOMBRE_CARTES_PAR_COULEUR = 13;
+
 class JeuDeCartes {
 
     constructor() {
@@ -12,7 +14,7 @@ class JeuDeCartes {
     }
 
     ajouteCartesCouleur(couleur, nombre) {
-        for (let i = nombre; i <= 13; i++) {
+        for (let i = nombre; i <= NOMBRE_CARTES_PAR_COULEUR; i++) {
             let maCarte = new Carte(i, couleur);
             this.jeuDeCartes.ajouteCarte(maCarte);
         }
