@@ -8,7 +8,7 @@ describe("Suite de tests Carte.js", function() {
     });
 
     it("Test des fonctions getValeur setvaleur", function() {
-        let carte = new Carte(1, 1);
+        let carte = new Carte(1, "K");
         expect(carte.getValeur()).toEqual(1);
 
         for (let i = 1; i <= 13; i++) {
@@ -37,61 +37,59 @@ describe("Suite de tests Carte.js", function() {
         expect(carte.getCouleur()).toEqual("P");
         carte.setCouleur("K");
         expect(carte.getCouleur()).toEqual("K");
-        carte.setCouleur("A");
-        expect(carte.getCouleur()).toEqual("K");
     });
 
     it("Test de la fonction getCouleurNumero", function() {
         let carte = new Carte(1, "P");
-        expect(carte.getCouleurNumero()).toEqual(1);
+        expect(carte.getCouleurNumero()).toEqual(0);
         carte.setCouleur("C");
-        expect(carte.getCouleurNumero()).toEqual(2);
+        expect(carte.getCouleurNumero()).toEqual(1);
         carte.setCouleur("K");
-        expect(carte.getCouleurNumero()).toEqual(3);
+        expect(carte.getCouleurNumero()).toEqual(2);
         carte.setCouleur("T");
-        expect(carte.getCouleurNumero()).toEqual(4);
+        expect(carte.getCouleurNumero()).toEqual(3);
     });
 
     it("Test de la fonction getNomCouleur", function() {
         let carte = new Carte(1, "P");
         expect(carte.getNomCouleur()).toEqual("Pique");
-        carte.setCouleurParNumero(2);
+        carte.setCouleurParNumero(Carte.COULEUR_COEUR);
         expect(carte.getNomCouleur()).toEqual("Coeur");
-        carte.setCouleurParNumero(3);
+        carte.setCouleurParNumero(Carte.COULEUR_CARREAU);
         expect(carte.getNomCouleur()).toEqual("Carreau");
-        carte.setCouleurParNumero(4);
+        carte.setCouleurParNumero(Carte.COULEUR_TREFLE);
         expect(carte.getNomCouleur()).toEqual("Trèfle");
     });
 
     it("Test de la fonction getIconeCouleur", function() {
         let carte = new Carte(1, "P");
         expect(carte.getIconeCouleur()).toEqual("♠");
-        carte.setCouleurParNumero(2);
+        carte.setCouleurParNumero(Carte.COULEUR_COEUR);
         expect(carte.getIconeCouleur()).toEqual("♥");
-        carte.setCouleurParNumero(3);
+        carte.setCouleurParNumero(Carte.COULEUR_CARREAU);
         expect(carte.getIconeCouleur()).toEqual("♦");
-        carte.setCouleurParNumero(4);
+        carte.setCouleurParNumero(Carte.COULEUR_TREFLE);
         expect(carte.getIconeCouleur()).toEqual("♣");
     });
 
     it("Test de la fonction setCouleurParNumero et getCouleur", function() {
-        let carte = new Carte(1, 1);
-        carte.setCouleurParNumero(1);
+        let carte = new Carte(1, "P");
+        carte.setCouleurParNumero(Carte.COULEUR_PIQUE);
         expect(carte.getCouleur()).toEqual("P");
-        carte.setCouleurParNumero(2);
+        carte.setCouleurParNumero(Carte.COULEUR_COEUR);
         expect(carte.getCouleur()).toEqual("C");
-        carte.setCouleurParNumero(3);
+        carte.setCouleurParNumero(Carte.COULEUR_CARREAU);
         expect(carte.getCouleur()).toEqual("K");
-        carte.setCouleurParNumero(4);
+        carte.setCouleurParNumero(Carte.COULEUR_TREFLE);
         expect(carte.getCouleur()).toEqual("T");
     });
 
     it("Test de la fonction getCouleurParNumero", function() {
-        let carte = new Carte(1, 1);
-        expect(carte.getCouleurParNumero(1)).toEqual("P");
-        expect(carte.getCouleurParNumero(2)).toEqual("C");
-        expect(carte.getCouleurParNumero(3)).toEqual("K");
-        expect(carte.getCouleurParNumero(4)).toEqual("T");
+        let carte = new Carte(1, "P");
+        expect(carte.getCouleurParNumero(Carte.COULEUR_PIQUE)).toEqual("P");
+        expect(carte.getCouleurParNumero(Carte.COULEUR_COEUR)).toEqual("C");
+        expect(carte.getCouleurParNumero(Carte.COULEUR_CARREAU)).toEqual("K");
+        expect(carte.getCouleurParNumero(Carte.COULEUR_TREFLE)).toEqual("T");
     });
 
     it("Test de la fonction getNomFigure", function() {

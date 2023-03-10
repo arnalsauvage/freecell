@@ -31,6 +31,10 @@ describe("Suite de tests PileDeCartes.js", function() {
         maCarte = new Carte(5, "C");
         maPile.ajouteCarte(maCarte);
         expect(maPile.contientCarte(new Carte(1, "C"))).toEqual(true);
+        expect(maPile.contientCarte(new Carte(2, "C"))).toEqual(true);
+        expect(maPile.contientCarte(new Carte(3, "C"))).toEqual(true);
+        expect(maPile.contientCarte(new Carte(4, "C"))).toEqual(true);
+        expect(maPile.contientCarte(new Carte(5, "C"))).toEqual(true);
 
     });
 

@@ -20,12 +20,7 @@ class PileDeCartes {
     }
 
     melanger() {
-        for (let i = this.pileDeCartes.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            const temp = this.pileDeCartes[i];
-            this.pileDeCartes[i] = this.pileDeCartes[j];
-            this.pileDeCartes[j] = temp;
-        }
+        this.pileDeCartes.sort(() => Math.random() - 0.5);
     }
 
     getNbCartes() {
@@ -42,7 +37,7 @@ class PileDeCartes {
         retour += "Longueur de la pile : " + this.pileDeCartes.length;
         let carte;
 
-        for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
+        for (let i = 0; i < this.pileDeCartes.length; i++) {
             carte = this.pileDeCartes[i];
             retour += " - " + carte.getNom();
         }
@@ -51,11 +46,11 @@ class PileDeCartes {
 
     contientCarte(carte) {
         // parcourt la pile pour chercher la carte
-        if (this.estVide()) {
+        if (this.estVide() || carte === undefined) {
             return false;
         }
         console.debug("contientCarte :  cherche carte "  + carte.getNom());
-        for (let i = 0; i <= this.pileDeCartes.length - 1; i++) {
+        for (let i = 0; i < this.pileDeCartes.length ; i++) {
             console.debug("element  " + i + " " + this.pileDeCartes[i].getNom());
             if ( carte.isEquivalent(this.pileDeCartes[i])) {
                 console.debug("contientCarte :  carte trouvée !");
@@ -78,5 +73,33 @@ class PileDeCartes {
             }
         }
         return true;
+    }
+
+    // Vide la pile
+    vider() {
+        this.pileDeCartes = new Array(0);
+    }
+
+// Compte le nombre de cartes de la pile qui sont équivalentes à la carte passée en paramètre
+    compteCartes(carte) {
+        let count = 0;
+        for (let i = 0; i < this.pileDeCartes.length; i++) {
+            if (carte.isEquivalent(this.pileDeCartes[i])) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+//  retire la carte passée en paramètre de la pile
+
+    retireCarte(carte) {
+        for (let i = 0; i < this.pileDeCartes.length; i++) {
+            if (carte.isEquivalent(this.pileDeCartes[i])) {
+                this.pileDeCartes.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
     }
 }

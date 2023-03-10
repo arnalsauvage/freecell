@@ -1,4 +1,48 @@
-    class Carte {
+class Carte {
+
+    // class static properties
+
+    static get COULEUR_PIQUE() {
+        return 0;
+    }
+
+    static get COULEUR_COEUR() {
+        return 1;
+    }
+
+    static get COULEUR_CARREAU() {
+        return 2;
+    }
+
+    static get COULEUR_TREFLE() {
+        return 3;
+    }
+
+    static get VALEUR_MIN() {
+        return 1;
+    }
+
+    static get VALEUR_MAX() {
+        return 13;
+    }
+
+    static get VALEUR_VALET() {
+        return 11;
+    }
+
+    static get VALEUR_DAME() {
+        return 12;
+
+    }
+
+    static get VALEUR_ROI() {
+        return 13;
+
+    }
+
+    static get VALEUR_AS() {
+        return 1;
+    }
 
     constructor(valeur, couleur) {
         this.setValeur(valeur);
@@ -7,11 +51,13 @@
 
     setValeur(maValeur) {
         maValeur = parseInt(maValeur);
-        if ((maValeur > 0) && (maValeur < 14)) {
-            this.valeur = maValeur;
-                console.log("Valeur " + maValeur + " initialisée");
+        // if maValeur is a number and between VALEUR_MIN and VALEUR_MAX
+
+        if (isNaN(maValeur) || maValeur < Carte.VALEUR_MIN || maValeur > Carte.VALEUR_MAX) {
+            console.error("/!\ -- Erreur, valeur " + maValeur + " non autorisée dans carte.js");
         } else {
-                console.debug("/!\ -- Erreur, valeur " + maValeur + " non autorisée dans carte.js");
+            this.valeur = maValeur;
+            // console.log("Valeur " + maValeur + " initialisée");
         }
     }
 
@@ -20,8 +66,9 @@
     }
 
     isEquivalent(carte) {
-        if (this==null || carte === null)
+        if (this == null || carte === null)
             return false;
+        // console.log("this.valeur = " + this.valeur + " carte.valeur = " + carte.valeur + " this.couleur = " + this.couleur + " carte.couleur = " + carte.couleur);
         return this.valeur === carte.valeur && this.couleur.toLowerCase() === carte.couleur.toLowerCase();
     }
 
@@ -29,6 +76,11 @@
         let couleursPermises = "CPKT";
         if (couleursPermises.includes(maCouleur)) {
             this.couleur = maCouleur;
+            // console.log("Couleur " + maCouleur + " initialisée");
+        }
+        else
+        {
+            console.warn("Erreur carte.js , couleur " + maCouleur + " non autorisée");
         }
     }
 
@@ -39,15 +91,15 @@
     getCouleurNumero() {
         switch (this.couleur) {
             case "K":
-                return 3;
+                return Carte.COULEUR_CARREAU;
             case "C":
-                return 2;
+                return Carte.COULEUR_COEUR;
             case "P":
-                return 1;
+                return Carte.COULEUR_PIQUE;
             case "T":
-                return 4;
+                return Carte.COULEUR_TREFLE;
             default:
-                 console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                console.warn("Erreur carte.js , couleur " + this.couleur + " non autorisée");
                 return "erreur carte.js !!!";
         }
     }
@@ -86,34 +138,38 @@
 
     setCouleurParNumero(numero) {
         switch (numero) {
-            case 1:
+            case Carte.COULEUR_PIQUE:
                 this.couleur = "P";
                 break;
-            case 2:
+            case Carte.COULEUR_COEUR:
                 this.couleur = "C";
                 break;
-            case 3:
+            case Carte.COULEUR_CARREAU:
                 this.couleur = "K";
                 break;
-            case 4:
+            case Carte.COULEUR_TREFLE:
                 this.couleur = "T";
                 break;
+
+                default:
+                console.error("Erreur carte.js , couleur " + this.couleur + " non autorisée");
+                return "erreur carte.js !!!";
         }
     }
 
     getCouleurParNumero(numero) {
         let couleur;
         switch (numero) {
-            case 1:
+            case Carte.COULEUR_PIQUE:
                 couleur = "P";
                 break;
-            case 2:
+            case Carte.COULEUR_COEUR:
                 couleur = "C";
                 break;
-            case 3:
+            case Carte.COULEUR_CARREAU:
                 couleur = "K";
                 break;
-            case 4:
+            case Carte.COULEUR_TREFLE:
                 couleur = "T";
                 break;
         }
@@ -123,13 +179,13 @@
 
     getNomFigure() {
         switch (this.valeur) {
-            case 11:
+            case Carte.VALEUR_VALET:
                 return "Valet";
-            case 12:
+            case Carte.VALEUR_DAME:
                 return "Dame";
-            case 13:
+            case Carte.VALEUR_ROI:
                 return "Roi";
-            case 1:
+            case Carte.VALEUR_AS:
                 return "As";
             default:
                 return "" + this.valeur;
@@ -138,13 +194,13 @@
 
     getNomCourtFigure() {
         switch (this.valeur) {
-            case 11:
+            case Carte.VALEUR_VALET:
                 return "V";
-            case 12:
+            case Carte.VALEUR_DAME:
                 return "D";
-            case 13:
+            case Carte.VALEUR_ROI:
                 return "R";
-            case 1:
+            case Carte.VALEUR_AS:
                 return "A";
             default:
                 return "" + this.valeur;
@@ -160,8 +216,8 @@
     }
 
     estValide() {
-        if( ! ( this.valeur > 0 && this.valeur < 14) ){
-         return false
+        if (!(this.valeur >= Carte.VALEUR_MIN && this.valeur <= Carte.VALEUR_MAX)) {
+            return false
         }
         return !(this.couleur !== "K" && this.couleur !== "C" && this.couleur !== "P" && this.couleur !== "T");
     }

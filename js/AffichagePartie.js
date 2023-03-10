@@ -2,10 +2,12 @@ const largeurCartePlusEspace = 1.1;
 const couleurCarteJouee = "lightgreen";
 const couleurCarteSuivantPile = "lightblue";
 const couleurCarteAscendante = "lightpink";
-const couleurCarteDescendante = "lightyellow";
+const couleurCarteDescendante = "white";
+const couleurCarteNonAccessible = "lightgrey";
+const couleurCarteCliquable = "lightblue";
+const couleurCarteMontable = "yellow";
 const largeurDesCartes = 110;
 const hauteurDesCartes = 150;
-
 
 class AffichagePartie {
 
@@ -28,7 +30,7 @@ class AffichagePartie {
             if (this.partie.isCarteCliquable(carte)) {
                 context.fillStyle = "white";
             } else {
-                context.fillStyle = "lightgrey";
+                context.fillStyle = couleurCarteNonAccessible;
             }
         }
 
@@ -43,7 +45,7 @@ class AffichagePartie {
         context.strokeRect(x, y, this.carteLargeur - 1, this.carteHauteur - 1);
     }
 
-    dessineCarte(carte, x, y, tas, couleurSurbrillance = false) {
+    dessineCarte(carte, x, y, tas, couleurSurbrillance = "") {
         let id = "canvas" + tas;
         let canvas = document.getElementById(id);
         let context = canvas.getContext("2d");
@@ -52,7 +54,7 @@ class AffichagePartie {
 
         // couleur de fond
         this.dessineFondDeCarte(context, carte, x, y);
-        if (couleurSurbrillance) {
+        if (couleurSurbrillance !== "") {
             this.metCarteEnSurbrillance(context, carte, x, y, couleurSurbrillance);
         }
         this.dessineTexte(carte, context, x, y);
@@ -108,7 +110,7 @@ class AffichagePartie {
     getContext(carte) {
         let position = new Position(this.partie.chercheCarte(carte));
         let id = "canvas";
-        switch (position.getPile()) {
+        switch (position.getTypeDePile()) {
             case  "COL" :
                 id = "canvas" + "Colonne";
                 break;
@@ -119,30 +121,27 @@ class AffichagePartie {
                 id = "canvas" + "CaseLibre";
                 break;
             default:
-                console.error("getContext : pile inconnue !" + position.getPile());
+                console.error("getContext : pile inconnue !" + position.getTypeDePile());
         }
         let canvas = document.getElementById(id);
         return canvas.getContext("2d");
     }
 
     metEnSurbrillance(carte, couleurSubrillance) {
-
         let position = new Position(this.partie.chercheCarte(carte));
         let x, y;
-
         let context = this.getContext(carte);
-
         console.log("metEnSurbrillance " + carte.getNom() + " couleur " + couleurSubrillance);
 
-        switch (position.getPile()) {
+        switch (position.getTypeDePile()) {
             case  "COL" :
-                x = (position.getNumero() - 1) * (this.carteLargeur * largeurCartePlusEspace);
-                y = (position.getIndice() - 1) * this.carteHauteurTete;
+                x = (position.getNumero() ) * (this.carteLargeur * largeurCartePlusEspace);
+                y = (position.getIndice() -1) * this.carteHauteurTete;
                 this.metCarteEnSurbrillance(context, carte, x, y, couleurSubrillance);
                 break;
             case "PIL":
             case "CEL" :
-                x = (position.getNumero() - 1 - 1) * (this.carteLargeur * largeurCartePlusEspace);
+                x = (position.getNumero()  - 1) * (this.carteLargeur * largeurCartePlusEspace);
                 y = 0;
                 this.metCarteEnSurbrillance(context, carte, x, y, couleurSubrillance);
                 break;
@@ -152,64 +151,52 @@ class AffichagePartie {
     dessineColonne(numero) {
         let colonne = this.partie.getColonne(numero);
         // draw the cards
-        let x = (numero - 1) * this.carteLargeur * largeurCartePlusEspace;
+        let x = (numero ) * this.carteLargeur * largeurCartePlusEspace;
         let y = 0;
 
         for (let i = 0; i < colonne.getNbCartes(); i++) {
-            this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", false);
-            // Si la carte peut monter dans la pile, on la met en jaune
-            if ((i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterDansLaPile(colonne.getCarteN(i))) {
-                this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", "yellow");
+            let surbrillance = false;
+            let carteAffichee = colonne.getCarteN(i);
+            if ((this.partie.cartePeutMonterSurUneColonne(carteAffichee)>=0) && (i+1===colonne.getNbCartes())){
+                surbrillance = couleurCarteCliquable;
             }
-            // Sinon, si elle peut aller sur une autre colonne non vide, on la met en vert
-            else {
-                for (let j = 1; j < 9; j++) {
-                    if ((colonne.getNbCartes() > 0) && (j !== i) && (i === colonne.getNbCartes() - 1) && this.partie.cartePeutMonterSurUneColonne(colonne.getCarteN(i))) {
-                        this.dessineCarte(colonne.getCarteN(i), x, y, "Colonne", "lightgreen");
-                    }
-                }
+            if (this.partie.cartePeutMonterDansLaPile(carteAffichee)) {
+                surbrillance = couleurCarteMontable;
             }
+            this.dessineCarte(carteAffichee, x, y, "Colonne", surbrillance);
             y += this.carteHauteurTete;
         }
     }
 
     dessinePile(numero) {
         let pile = this.partie.getPile(numero);
-
         // draw the cards
-        let x = (numero - 1) * (this.carteLargeur * largeurCartePlusEspace);
+        let x = (numero ) * (this.carteLargeur * largeurCartePlusEspace);
         let y = 0;
-
         if (pile.getCarte() != null) {
             this.dessineCarte(pile.getCarte(), x, y, "Pile");
         } else {
-
             this.dessineCarteVide("pile", x, y, "Pile");
             this.dessineTextePileVide(pile, x + largeurDesCartes / 5, y + hauteurDesCartes / 3);
-
         }
     }
 
     dessineCaseLibre(numero) {
         let caseLibre = this.partie.getCaseLibre(numero);
-        console.error("dessineCaseLibre " + numero);
+        // console.log("dessineCaseLibre " + numero);
         // draw the cards
-        let x = (numero - 1) * (this.carteLargeur * largeurCartePlusEspace);
+        let x = (numero ) * (this.carteLargeur * largeurCartePlusEspace);
         let y = 0;
         let carte = caseLibre.getCarte();
         if (carte != null) {
-            this.dessineCarte(carte, x, y, "CaseLibre", false);
-            let couleur = "";
-            if (this.partie.cartePeutMonterSurUneColonne(carte) > 0) {
+            let couleur = false;
+            if (this.partie.cartePeutMonterSurUneColonne(carte) >= 0) {
                 couleur = "lightgreen";
             }
             if (this.partie.cartePeutMonterDansLaPile(carte)) {
                 couleur = "yellow";
             }
-            if (couleur !== "") {
-                this.dessineCarte(carte, x, y, "CaseLibre", couleur);
-            }
-
+            this.dessineCarte(carte, x, y, "CaseLibre", couleur);
         } else {
             console.log("carte case libre " + numero + " vide");
             this.dessineCarteVide("motif", x, y, "CaseLibre");
@@ -231,28 +218,29 @@ class AffichagePartie {
     }
 
     afficheCartesSuivantesPiles() {
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 0; i < 4; i++) {
             this.afficheCarteSuivantePile(i);
         }
     }
 
     jouer(coup) {
         coup.jouer(this.partie);
-        this.ajouteHistorique(coup.shortDesc() + " ");
+        this.ajouteHistorique(coup.shortDesc().trim() + " ");
         this.affiche();
         this.partie.coup = new Coup();
     }
 
-
+    // Cette méthode est appelée par le bouton "Monte !" du menu
+    // Elle tente de monter une carte sur une pile
     joueCarteAmonter() {
         let carte;
-        for (let i = 1; i <= 8; i++) {
+        for (let i = 0; i < NB_COLONNES; i++) {
             // Si la colonne n'est pas vide
             if (!this.partie.getColonne(i).estVide()) {
                 carte = this.partie.getColonne(i).getCarte();
                 if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte)) {
-                    let numeroPile = this.partie.getPileCouleurCarte(carte);
-                    let coup = new Coup(carte, "COL" + i, "PIL" + numeroPile);
+                    let numeroPile = this.partie.getIndexPileCouleurCarte(carte);
+                    let coup = new Coup(carte, "COL" + (i), "PIL" + (numeroPile));
                     console.log(" Mon coup : carte " + carte + " coup : " + coup.toString());
                     this.jouer(coup);
                     return;
@@ -270,13 +258,16 @@ class AffichagePartie {
 
         // erase the canvas
         context.clearRect(0, 0, canvas.width, canvas.height);
-        for (let i = 1; i <= 8; i++) {
+        for (let i = 0; i < NB_COLONNES; i++) {
+            console.log("dessineColonne " + i);
             this.dessineColonne(i);
         }
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 0; i < NB_PILES; i++) {
+            console.log("dessinePile " + i);
             this.dessinePile(i);
         }
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 0; i < NB_PILES; i++) {
+            console.log("dessineCaseLibre " + i);
             this.dessineCaseLibre(i);
         }
         this.log = bckplog;
@@ -284,23 +275,22 @@ class AffichagePartie {
             alert("Conglaturations :D !");
         }
         if (this.partie.compterLesCartesEnJeu() !== 52) {
-            alert("Il manque des cartes !");
+            alert("Il manque des cartes ! Il n'y en a que " + this.partie.compterLesCartesEnJeu() + " !");
         }
-
     }
 
     onClickColonne() {
-        // get x y of mouse
+        // get x y of mouse click
         let x = event.clientX - document.getElementById("canvasColonne").offsetLeft;
         let y = event.clientY - document.getElementById("canvasColonne").offsetTop;
         console.log("click x = " + x + " y = " + y);
 
         // get the column number
-        let numeroColonne = Math.floor(x / (largeurCartePlusEspace * this.carteLargeur)) + 1;
+        let numeroColonne = Math.floor(x / (largeurCartePlusEspace * this.carteLargeur)) ;
 
         // get the card number
-        let numeroCarte = Math.floor(y / this.carteHauteurTete) + 1;
-        console.log("click sur colonnes " + numeroColonne + " carte " + numeroCarte);
+        let numeroCarte = Math.floor(y / this.carteHauteurTete) +1;
+        console.log("click sur colonne " + (numeroColonne +1 )+ " carte " + (numeroCarte ));
 
         // détermine si le clic est magique : si on clique plus bas que l'en-tête de la dernière carte
         let clicMagique = false;
@@ -315,12 +305,13 @@ class AffichagePartie {
         if (carte == null) {
             console.log("carte null");
         } else {
-            console.log("---- carte : " + carte.getNom() + carte.valeur + " " + carte.couleur);
+            console.log("---- carte : " + carte.getNom() + " " + carte.valeur + " " + carte.couleur);
         }
         if (clicMagique) {
-            console.log("click magique sur colonnes " + numeroColonne + " carte " + numeroCarte);
+            console.log("click magique sur colonne " + (numeroColonne +1 ) + " carte " + numeroCarte);
             let clickMagiqueOk = this.partie.cartePeutMonterDansLaPile(carte);
-            let indexMaPile = this.partie.getPileCouleurCarte(carte);
+            console.log("click magique ok ? " + clickMagiqueOk + " carte : " + carte.getNom() );
+            let indexMaPile = this.partie.getIndexPileCouleurCarte(carte);
             if (clickMagiqueOk) {
                 this.partie.coup.carte = carte;
                 this.partie.coup.origine = "COL" + numeroColonne;
@@ -329,7 +320,7 @@ class AffichagePartie {
             } else {
                 // on tente de déplacer une carte de la colonne vers une autre colonne
                 let colonne = this.partie.cartePeutMonterSurUneColonne(carte);
-                if (colonne > 0) {
+                if (colonne >= 0) {
                     this.partie.coup.carte = carte;
                     this.partie.coup.origine = "COL" + numeroColonne;
                     this.partie.coup.destination = "COL" + colonne;
@@ -352,42 +343,42 @@ class AffichagePartie {
             }
             if (this.partie.coup.coupValable(this.partie)) {
                 this.ajouteHistorique(this.partie.coup.shortDesc() + " ");
+                this.jouer(partie.coup);
             }
-            this.jouer(partie.coup);
         }
     }
 
     gerePremierClickSurColonne(carte, numeroColonne, numeroCarte) {
         this.partie.coup.carte = carte;
-        this.partie.coup.origine = "COL" + numeroColonne;
-        let x = (numeroColonne - 1) * (this.carteLargeur * largeurCartePlusEspace);
+        this.partie.coup.origine = "COL" + (numeroColonne);
+        let x = (numeroColonne ) * (this.carteLargeur * largeurCartePlusEspace);
         let y = (numeroCarte - 1) * this.carteHauteurTete;
         this.metEnSurbrillance(carte, couleurCarteJouee);
         if (carte.valeur > 1) {
             if (carte.estRouge()) {
-                let carteAscendant = new Carte(carte.valeur - 1, "T");
+                let carteAscendant = new Carte(carte.valeur + 1, "T");
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
-                carteAscendant = new Carte(carte.valeur - 1, "P");
+                carteAscendant = new Carte(carte.valeur + 1, "P");
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
 
             } else {
-                let carteAscendant = new Carte(carte.valeur - 1, "C");
+                let carteAscendant = new Carte(carte.valeur + 1, "C");
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
-                carteAscendant = new Carte(carte.valeur - 1, "K");
+                carteAscendant = new Carte(carte.valeur + 1, "K");
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
             }
         }
         if (carte.valeur < 13) {
             if (carte.estRouge()) {
-                let carteDescendant = new Carte(carte.valeur + 1, "T");
+                let carteDescendant = new Carte(carte.valeur -1, "T");
                 this.metEnSurbrillance(carteDescendant, couleurCarteDescendante);
-                carteDescendant = new Carte(carte.valeur + 1, "P");
+                carteDescendant = new Carte(carte.valeur - 1, "P");
                 this.metEnSurbrillance(carteDescendant, couleurCarteDescendante);
 
             } else {
-                let carteDescendant = new Carte(carte.valeur + 1, "C");
+                let carteDescendant = new Carte(carte.valeur - 1, "C");
                 this.metEnSurbrillance(carteDescendant, couleurCarteDescendante);
-                carteDescendant = new Carte(carte.valeur + 1, "K");
+                carteDescendant = new Carte(carte.valeur - 1, "K");
                 this.metEnSurbrillance(carteDescendant, couleurCarteDescendante);
             }
         }
@@ -398,7 +389,7 @@ class AffichagePartie {
     onClickPile() {
         // get x y of mouse
         let x = event.clientX;
-        let numeroPile = Math.floor((x - document.getElementById("canvasPile").offsetLeft) / (this.carteLargeur * largeurCartePlusEspace)) + 1;
+        let numeroPile = Math.floor((x - document.getElementById("canvasPile").offsetLeft) / (this.carteLargeur * largeurCartePlusEspace)) ;
         let y = event.clientY - document.getElementById("canvasPile").offsetTop;
         console.info("click x = " + x + " y = " + y);
         console.log("numeroPile : " + numeroPile);
@@ -435,7 +426,7 @@ class AffichagePartie {
         // get x y of mouse
         let x = event.clientX - document.getElementById("canvasCaseLibre").offsetLeft;
         let y = event.clientY - document.getElementById("canvasCaseLibre").offsetTop;
-        let numeroCaseLibre = Math.floor(x / (this.carteLargeur * largeurCartePlusEspace)) + 1;
+        let numeroCaseLibre = Math.floor(x / (this.carteLargeur * largeurCartePlusEspace));
         let caseLibre = this.partie.getCaseLibre(numeroCaseLibre);
         let carte = caseLibre.getCarte();
         console.log("click x = " + x + " y = " + y);
@@ -447,7 +438,7 @@ class AffichagePartie {
 
             console.log("click magique sur case libre " + numeroCaseLibre + " carte " + carte);
             let clickMagiqueOk = this.partie.cartePeutMonterDansLaPile(carte);
-            let indexMaPile = this.partie.getPileCouleurCarte(carte);
+            let indexMaPile = this.partie.getIndexPileCouleurCarte(carte);
             if (clickMagiqueOk) {
                 this.partie.coup.carte = carte;
                 this.partie.coup.origine = "CEL" + numeroCaseLibre;
@@ -475,7 +466,7 @@ class AffichagePartie {
             if (carte != null) {
                 console.log("coup : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + ' ' + this.partie.coup.origine + " ");
             }
-            let x = (numeroCaseLibre - 1) * (this.carteLargeur * largeurCartePlusEspace);
+            let x = (numeroCaseLibre) * (this.carteLargeur * largeurCartePlusEspace);
             let y = 0;
             this.dessineCarte(carte, x, y, "CaseLibre", couleurCarteJouee);
         }
@@ -493,18 +484,19 @@ class AffichagePartie {
     arriere() {
         let coup = this.partie.listeDesCoups.deleteLastCoup();
         coup.annuler(this.partie);
-        this.affiche();
         // Suppression du coup joué de la liste des coups joués
         const textarea = document.getElementById('historique');
-        // Supprime les 13 derniers caractères
-        textarea.value = textarea.value.substring(0, textarea.value.length - 13);
+        // Supprime la derniere entrée dans le textarea
+        textarea.value = textarea.value.substring(0, textarea.value.lastIndexOf(" "));
+        this.affiche();
+
     }
 
     ajouteHistorique(chaine) {
         const textarea = document.getElementById('historique');
 
 // ✅ Append text
-        textarea.value += " " + chaine;
+        textarea.value = textarea.value.trim() + " " + chaine.trim();
     }
 
 }
