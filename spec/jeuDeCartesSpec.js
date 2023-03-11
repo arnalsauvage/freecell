@@ -12,9 +12,21 @@ describe("Suite de tests jeuDeCartes.js", function() {
         expect(monJeu.jeuDeCartes.prendCarte().isEquivalent(maCarte)).toEqual(true);
     });
     it("Test de la fonction melanger", function() {
+        // Given deux jeux identiques
+        let monJeuInitial = new JeuDeCartes ();
+        expect(monJeu.jeuDeCartes.isEquivalent(monJeuInitial.jeuDeCartes)).toEqual(true);
+
+        // When on mélange le jeu
         monJeu.melanger();
-        maCarte = new Carte(13,"T");
-        expect(monJeu.jeuDeCartes.prendCarte().isEquivalent(maCarte)).toEqual(false);
+
+        // Then on s'attend à ce que les deux jeux soient différents
+        let differences = 0;
+        for (let i = 0; i < monJeu.getNbCartes(); i++) {
+            if (!monJeu.jeuDeCartes.getCarteN(i).isEquivalent(monJeuInitial.jeuDeCartes.getCarteN(i))) {
+                differences++;
+            }
+        }
+        expect(differences).toBeGreaterThan(0);
     });
 
     it("Test de prendCarte", function() {
