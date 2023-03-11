@@ -31,4 +31,8 @@ class JeuDeCartes {
     getNbCartes() {
         return this.jeuDeCartes.getNbCartes();
     }
+
+    getCarteN(index) {
+        return this.jeuDeCartes.getCarteN(index);
+    }
 }
