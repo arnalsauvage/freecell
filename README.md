@@ -3,15 +3,14 @@
 ce jeu de freecell propose des aides graphiques à la résolution
 
 ## Todo 
-
-- Permettre de déplacer plusieurs cartes d'un coup
-    v compter le nombre de cases libres (colonne + freecell)
-  - evaluer le nombre de cartes déplaçables 
-    v détecter un clic sur une carte 'en dessous'
-    v mettre en surbrillance une carte en dessous
-    v définir si une série de cartes peut être déplacée
-  - gérer le déplacement dans l'historique
-- faire le drag'n drop
+- 1 le bouton "monte" devrait monter aussi les cartes de la pile
+- 1 vider l'historique quand une nouvelle partie est démarrée
+- 2 bug : qd on cherche les cartes 'ascendantes et descendantes', celles des piles sont affichées, et en plus décalées d'une case à gauche !
+- 2 trouver des couleurs de surbrillance
+- 3 bug : les cartes de la pile parfois ne peuvent pas être déplacées ???
+- 3 remplacer le bouton next par une case à cocher "nexts" : quand la case est cochée, on affiche les nexts en surbrillanc
+- 3 freecell vers texte : permettre de copier une partie quand elle est démarrée
+- 5 gérer les évènements tactiles pour que le site puisse être utilisé en mode mobile
 
 ## Done
 - gérer une carte
@@ -32,6 +31,14 @@ ce jeu de freecell propose des aides graphiques à la résolution
 - mettre en évidence les prochaines cartes à monter sur la pile
 - faire un bouton pour montrer les 4 prochaines cartes à monter
 - bug : le déplacement en deux clics n'est pas bien contrôlé : tous les mouvements sont permis !
+- Permettre de déplacer plusieurs cartes d'un coup
+  - compter le nombre de cases libres (colonne + freecell)
+  - evaluer le nombre de cartes déplaçables 
+  - détecter un clic sur une carte 'en dessous'
+  - mettre en surbrillance une carte en dessous
+  - définir si une série de cartes peut être déplacée
+  - gérer le déplacement dans l'historique
+- faire le drag'n drop
 
 ## Carte.js
 un objet pour coder une carte : 
