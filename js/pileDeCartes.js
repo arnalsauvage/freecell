@@ -19,8 +19,26 @@ class PileDeCartes {
         this.pileDeCartes.push(maCarte);
     }
 
+    intervertitCartes(index1, index2) {
+        let carte1 = this.getCarteN(index1);
+        let carte2 = this.getCarteN(index2);
+        this.pileDeCartes[index1] = carte2;
+        this.pileDeCartes[index2] = carte1;
+    }
+
     melanger() {
-        this.pileDeCartes.sort(() => Math.random() - 0.5);
+        // Cette méthode mélange les cartes dans le jeuDeCartes, mais bizarement n'est pas efficace sur mobile ?!?
+        // this.pileDeCartes.sort(() => Math.random() - 0.5);
+
+
+        let carte;
+        let numeroCarte;
+        // On va mélanger 2000 cartes
+        for (let i = 0; i < 51; i++) {
+        // tirer un numero au hasard entre 0 et 51
+            numeroCarte = Math.floor(Math.random() * this.pileDeCartes.length);
+            this.intervertitCartes(numeroCarte, i);
+        }
     }
 
     getNbCartes() {
@@ -49,10 +67,10 @@ class PileDeCartes {
         if (this.estVide() || carte === undefined) {
             return false;
         }
-        console.debug("contientCarte :  cherche carte "  + carte.getNom());
-        for (let i = 0; i < this.pileDeCartes.length ; i++) {
+        console.debug("contientCarte :  cherche carte " + carte.getNom());
+        for (let i = 0; i < this.pileDeCartes.length; i++) {
             console.debug("element  " + i + " " + this.pileDeCartes[i].getNom());
-            if ( carte.isEquivalent(this.pileDeCartes[i])) {
+            if (carte.isEquivalent(this.pileDeCartes[i])) {
                 console.debug("contientCarte :  carte trouvée !");
                 return true;
             }
