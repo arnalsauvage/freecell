@@ -14,7 +14,6 @@ class AffichageCarte {
                 context.fillStyle = "lightgrey";
             }
         }
-
         if (carte == null || carte.valeur === 0) {
             context.fillStyle = "grey";
         }
@@ -87,6 +86,4 @@ class AffichageCarte {
         const carte = new Carte(1, pile.couleur);
         context.fillText(carte.getIconeCouleur(), x + largeurDesCartes / 8, y + this.carteHauteurTete / 2);
     }
-
-
 }

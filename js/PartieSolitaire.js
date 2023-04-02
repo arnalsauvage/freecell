@@ -203,6 +203,7 @@ class PartieSolitaire {
 
     demarrePartie() {
         this.distribue();
+        this.listeDesCoups = new ListeCoups();
     }
 
 // On compte les cases libres piles et colonnes

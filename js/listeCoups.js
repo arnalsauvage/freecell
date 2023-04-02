@@ -8,7 +8,7 @@ class ListeCoups {
     addCoup(coup) {
         if (coup && typeof coup.getDestination() === 'string' && typeof coup.getOrigine() ===   'string' && coup.getCarte() instanceof Carte && coup.getDestination() !== '' && coup.getOrigine() !== '') {
             this.#listeCoups.push(coup);
-            console.log("Coup ajouté");
+            //console.log("Coup ajouté");
         }
         else    {
             throw new Error("Le coup n'est pas valide");

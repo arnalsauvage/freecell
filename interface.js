@@ -11,6 +11,7 @@ function demarrePartie() {
     partie.demarrePartie();
     affichagePartie = new AffichagePartie(partie);
     affichagePartie.affiche();
+    affichagePartie.videHistorique();
 }
 
 function chercheCarte() {
@@ -71,6 +72,7 @@ function nouvellePartieNonMelangee() {
     partie.distribue(false);
     affichagePartie = new AffichagePartie(partie);
     affichagePartie.affiche();
+    affichagePartie.videHistorique();
 }
 
 function importePartie() {
@@ -80,6 +82,7 @@ function importePartie() {
     monimport.import(txt, partie);
     affichagePartie = new AffichagePartie(partie);
     affichagePartie.affiche();
+    affichagePartie.videHistorique();
 }
 
 // Récupérer le bouton

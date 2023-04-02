@@ -155,7 +155,7 @@ class AffichagePartie {
         let y = 0;
 
         for (let i = 0; i < colonne.getNbCartes(); i++) {
-            let surbrillance = false;
+            let surbrillance = "";
             let carteAffichee = colonne.getCarteN(i);
             if ((this.partie.cartePeutMonterSurUneColonne(carteAffichee)>=0) && (i+1===colonne.getNbCartes())){
                 surbrillance = couleurCarteCliquable;
@@ -189,7 +189,7 @@ class AffichagePartie {
         let y = 0;
         let carte = caseLibre.getCarte();
         if (carte != null) {
-            let couleur = false;
+            let couleur = "";
             if (this.partie.cartePeutMonterSurUneColonne(carte) >= 0) {
                 couleur = "lightgreen";
             }
@@ -241,7 +241,20 @@ class AffichagePartie {
                 if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte)) {
                     let numeroPile = this.partie.getIndexPileCouleurCarte(carte);
                     let coup = new Coup(carte, "COL" + (i), "PIL" + (numeroPile));
-                    console.log(" Mon coup : carte " + carte + " coup : " + coup.toString());
+                    // console.log(" Mon coup : carte " + carte + " coup : " + coup.toString());
+                    this.jouer(coup);
+                    return;
+                }
+            }
+        }
+        // Parcourt les cases libres pour tenter de les monter :
+        for(let i=0; i < NB_PILES; i++){
+            if (!this.partie.getCaseLibre(i).estLibre()) {
+                carte = this.partie.getCaseLibre(i).getCarte();
+                if (carte.estValide() && this.partie.cartePeutMonterDansLaPile(carte)) {
+                    let numeroPile = this.partie.getIndexPileCouleurCarte(carte);
+                    let coup = new Coup(carte, "CEL" + (i), "PIL" + (numeroPile));
+                    // console.log(" Mon coup : carte " + carte + " coup : " + coup.toString());
                     this.jouer(coup);
                     return;
                 }
@@ -342,7 +355,6 @@ class AffichagePartie {
                     .log("Second clic, coup : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + ' ' + this.partie.coup.origine + " " + this.partie.coup.destination);
             }
             if (this.partie.coup.coupValable(this.partie)) {
-                this.ajouteHistorique(this.partie.coup.shortDesc() + " ");
                 this.jouer(partie.coup);
             }
         }
@@ -488,8 +500,8 @@ class AffichagePartie {
         const textarea = document.getElementById('historique');
         // Supprime la derniere entrée dans le textarea
         textarea.value = textarea.value.substring(0, textarea.value.lastIndexOf(" "));
+        this.partie.listeDesCoups.deleteLastCoup();
         this.affiche();
-
     }
 
     ajouteHistorique(chaine) {
@@ -499,4 +511,8 @@ class AffichagePartie {
         textarea.value = textarea.value.trim() + " " + chaine.trim();
     }
 
+    videHistorique() {
+        const textarea = document.getElementById('historique');
+        textarea.value = "Historique : ";
+    }
 }

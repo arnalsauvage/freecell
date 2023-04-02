@@ -36,7 +36,7 @@ button {
 }
 
 h1 {
-    color : black;
+    color: black;
     font-size: 4vh;
 }
 
@@ -45,11 +45,11 @@ h1 {
 }
 
 input {
-    height: calc(60vh / 10);
-    width: calc(60vh / 10);
+    height: 3vh;
+    width: 10vw;
     background-color: #efefef;
     -moz-appearance: textfield;
-    font-size: 6vh;
+    font-size: 3vh;
     text-align: center;
 }
 
@@ -85,3 +85,4 @@ tr:nth-of-type(3),
 tr:nth-of-type(6) {
     border-bottom: 3px solid #000;
 }
+
