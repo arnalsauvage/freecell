@@ -67,7 +67,8 @@ function metCarteEnSurbrillance(carte) {
 }
 
 function nouvellePartieNonMelangee() {
-    let txt = document.getElementById("chercheCarte").value;
+    // removed useless assignment 13/10/2023
+    // let txt = document.getElementById("chercheCarte").value;
     partie = new PartieSolitaire();
     partie.distribue(false);
     affichagePartie = new AffichagePartie(partie);
