@@ -139,7 +139,6 @@ class PartieSolitaire {
             case "CEL" :
                 console.debug("PartieSolitaire.js - isCarteCliquable -  carte examinee dans une cellule donc cliquable");
                 return true;
-                break;
         }
         return false;
     }
@@ -171,15 +170,14 @@ class PartieSolitaire {
                 cartePeutMonterDansLaPile = false;
                 console.log("cartePeutMonterDansLaPile - pile vide et carte pas un as");
             }
-        } else {
+        } else if (carte.valeur !== this.getPile(indexMaPile).getCarte().valeur + 1) {
             // Si la pile n'est pas vide, et que la carte n'est pas la suivante, c'est loupé !
-            if (carte.valeur !== this.getPile(indexMaPile).getCarte().valeur + 1) {
-                cartePeutMonterDansLaPile = false;
-                console.log("cartePeutMonterDansLaPile - pile non vide et carte pas la suivante");
-            }
+            cartePeutMonterDansLaPile = false;
+            console.log("cartePeutMonterDansLaPile - pile non vide et carte pas la suivante");
         }
-        console.log("cartePeutMonterDansLaPile -  = " + cartePeutMonterDansLaPile );
-        return cartePeutMonterDansLaPile ;
+
+        console.log("cartePeutMonterDansLaPile -  = " + cartePeutMonterDansLaPile);
+        return cartePeutMonterDansLaPile;
     }
 
     arriere() {
@@ -191,11 +189,9 @@ class PartieSolitaire {
         let victoire = true;
         for (let i = 0; i < NB_PILES; i++) {
             let pile = this.getPile(i);
-            {
-                if (pile.getNbCartes() !== CARTES_PAR_COULEUR) {
-                    victoire = false;
-                    console.log("Pile " + i + " non complète");
-                }
+            if (pile.getNbCartes() !== CARTES_PAR_COULEUR) {
+                victoire = false;
+                console.log("Pile " + i + " non complète");
             }
         }
         return victoire;
@@ -235,35 +231,32 @@ class PartieSolitaire {
             retourRecherche = this.chercheDansColonne(carte, colonne);
             if (retourRecherche !== -1) {
                 // console.log("Trouvé COL" + (colonne) + " " + (retourRecherche));
-                trouve = true;
                 return "COL" + (colonne) + (retourRecherche);
             }
             colonne++;
         }
         // 2/3 On cherche ensuite dans les piles
         let i = 0;
-        while (!trouve && i < NB_PILES) {
+        while (i < NB_PILES) {
             let pile = this.getPile(i);
             if (pile.contientCarte(carte)) {
-                return "PIL" + (i );
-            }
-            else {
+                return "PIL" + (i);
+            } else {
                 i++;
             }
         }
         // 3/3 On cherche enfin dans les cellules
         i = 0;
-        while (!trouve && i < NB_PILES) {
+        while (i < NB_PILES) {
             let caseLibre = this.getCaseLibre(i);
             // console.log("caseLibre " + i + " " + caseLibre.getCarte().getNom());
-            if (caseLibre.getCarte()!==null && caseLibre.getCarte().isEquivalent(carte)) {
-                return "CEL" + (i );
-            }
-            else {
+            if (caseLibre.getCarte?.getCarte().isEquivalent(carte)) {
+                return "CEL" + (i);
+            } else {
                 i++;
             }
         }
-        console.error("carte non trouvée" +carte.getNom());
+        console.error("carte non trouvée" + carte.getNom());
         return null;
     }
 
@@ -295,7 +288,7 @@ class PartieSolitaire {
             console.warn("colonne null dans Partie.js.cartesCliquablesColonne");
             return cartesCliquable;
         }
-        if (colonne.getNbCartes() === 0){
+        if (colonne.getNbCartes() === 0) {
             return cartesCliquable;
         }
 

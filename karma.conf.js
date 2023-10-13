@@ -4,7 +4,7 @@
 module.exports = function (config) {
     config.set({
 
-        // base path that will be used to resolve all patterns (eg. files, exclude)
+        // base path that will be used to resolve all patterns (e.g. files, exclude)
         basePath: '',
 
         // frameworks to use
@@ -25,7 +25,7 @@ module.exports = function (config) {
         preprocessors: {},
 
         // test results reporter to use
-        // possible values: 'dots', 'progress'
+        // possible values : 'dots', 'progress'
         // available reporters: https://www.npmjs.com/search?q=keywords:karma-reporter
         reporters: ['progress', 'spec'],
 

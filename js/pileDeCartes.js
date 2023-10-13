@@ -30,8 +30,6 @@ class PileDeCartes {
         // Cette méthode mélange les cartes dans le jeuDeCartes, mais bizarement n'est pas efficace sur mobile ?!?
         // this.pileDeCartes.sort(() => Math.random() - 0.5);
 
-
-        let carte;
         let numeroCarte;
         // On va mélanger 2000 cartes
         for (let i = 0; i < 51; i++) {
@@ -55,8 +53,8 @@ class PileDeCartes {
         retour += "Longueur de la pile : " + this.pileDeCartes.length;
         let carte;
 
-        for (let i = 0; i < this.pileDeCartes.length; i++) {
-            carte = this.pileDeCartes[i];
+        for (const element of this.pileDeCartes) {
+            carte = element;
             retour += " - " + carte.getNom();
         }
         return retour;
@@ -101,8 +99,8 @@ class PileDeCartes {
 // Compte le nombre de cartes de la pile qui sont équivalentes à la carte passée en paramètre
     compteCartes(carte) {
         let count = 0;
-        for (let i = 0; i < this.pileDeCartes.length; i++) {
-            if (carte.isEquivalent(this.pileDeCartes[i])) {
+        for (const element of this.pileDeCartes) {
+            if (carte.isEquivalent(element)) {
                 count++;
             }
         }

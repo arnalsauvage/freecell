@@ -21,8 +21,8 @@ class Import {
     // Search for a card in the given list of stacks
 // Returns true if the card is found, false otherwise
     searchCardInStacks(card, stacks) {
-        for (let i = 0; i < stacks.length; i++) {
-            if (stacks[i].contientCarte(card)) {
+        for (const item of stacks) {
+            if (item.contientCarte(card)) {
                 return true;
             }
         }
@@ -58,8 +58,6 @@ class Import {
     // Returns a card
     importCard(text) {
         let card;
-        let color = null;
-        let value = null;
 
         console.log("Import de la carte " + text);
 
