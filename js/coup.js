@@ -222,14 +222,14 @@ class Coup {
         let typeDestination = this.getTypeDestination();
         let numeroDest = this.getNumDestination();
 
-        // Si la destination est une colonne, on récupère la colonne visée
         switch (typeDestination) {
+            // Si la destination est une colonne, on récupère la colonne visée
             case "COL" :
                 return this.coupValableSurColonne(partie, numeroDest);
 
             // Si la destination est une cellule,
             case "CEL":
-                let UneSeuleCarteEstBougee =  this.getTypeOrigine()==="COL" && partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) ;
+                let UneSeuleCarteEstBougee =  (this.getTypeOrigine()==="CEL" )||(this.getTypeOrigine()==="COL" && partie.getColonne(this.getNumOrigine()).getCarte().isEquivalent(this.carte) );
                 let caseEstLibre = partie.getCaseLibre(numeroDest).estLibre();
                 console.log("Coup.js - coupValable - UneSeuleCarteEstBougee : " + UneSeuleCarteEstBougee + " caseEstLibre : " + caseEstLibre);
                 // Si une seule carte bougée, c'est ok si la case est libre

@@ -221,13 +221,16 @@ class PartieSolitaire {
     }
 
     chercheCarte(carte) {
+        if ( carte == null) {
+            console.war("Appel de chercheCarte sur element null !");
+            return;
+        }
         console.log("- PartieSolitaire.js -- chercheCarte  " + carte.getNom());
-        let trouve = false;
         let colonne = 0;
         let retourRecherche = null;
 
         // 1/3 On cherche d'abord dans les colonnes
-        while (!trouve && colonne < NB_COLONNES) {
+        while (colonne < NB_COLONNES) {
             retourRecherche = this.chercheDansColonne(carte, colonne);
             if (retourRecherche !== -1) {
                 // console.log("Trouvé COL" + (colonne) + " " + (retourRecherche));
@@ -250,9 +253,10 @@ class PartieSolitaire {
         while (i < NB_PILES) {
             let caseLibre = this.getCaseLibre(i);
             // console.log("caseLibre " + i + " " + caseLibre.getCarte().getNom());
-            if (caseLibre.getCarte?.getCarte().isEquivalent(carte)) {
-                return "CEL" + (i);
-            } else {
+            if (caseLibre?.getCarte() !== null && caseLibre?.getCarte().isEquivalent(carte)) {
+                return "CEL" + (i );
+            }
+            else {
                 i++;
             }
         }
