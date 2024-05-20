@@ -7,7 +7,7 @@ const PILE_PILE = 'PIL';
 class Position {
     constructor(chainePosition) {
         if (chainePosition===null || chainePosition===undefined) {
-            throw new Error('Position invalide : ne doit pas etre null');
+            throw new Error('Position invalide : ne doit pas être null');
         }
         if (!chainePosition || chainePosition.length < 4 || chainePosition.length > 6) {
             throw new Error('Position invalide : ' + chainePosition + ' doit etre de la forme COL1, CEL2, PIL3, COL29, COL210, ...');

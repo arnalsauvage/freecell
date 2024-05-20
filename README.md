@@ -3,14 +3,15 @@
 ce jeu de freecell propose des aides graphiques à la résolution
 
 ## Todo 
-- 2 pts - bug : qd on cherche les cartes 'ascendantes et descendantes', celles des piles sont affichées, et en plus décalées d'une case à gauche !
 - 2 pts - trouver des couleurs de surbrillance
-- 3 pts - bug : les cartes de la pile parfois ne peuvent pas être déplacées ???
 - 3 pts - créer une case à cocher "nexts" : quand la case est cochée, on affiche les nexts en surbrillances
 - 3 pts - freecell vers texte : permettre de copier une partie quand elle est démarrée
 - 5 pts - gérer les évènements tactiles pour que le site puisse être utilisé en mode mobile
 
 ## Done
+- 2024-05-20 2 pts - bug : les annulations ne fonctionnent pas
+- 2024-05-20 3 pts - bug : les cartes de la pile parfois ne peuvent pas être déplacées ???
+- 2024-05-20 2 pts - bug : qd on cherche les cartes 'ascendantes et descendantes', celles des piles sont affichées, et en plus décalées d'une case à gauche !
 - 2023-04-02 - 1 pt - les piles sont affichées sur une seule ligne en version mobile
 - 2023-04-02 - 1 pt - ménage sur la page d'accueil, réorganisation des boutons
 - 2023-04-02 - 1 pt - vider l'historique quand une nouvelle partie est démarrée

@@ -128,10 +128,14 @@ class AffichagePartie {
     }
 
     metEnSurbrillance(carte, couleurSubrillance) {
+        if (carte==null){
+            console.warn ("Affichagepartie/metEnSurbrillance : Carte nulle ne peut être mise en surbrillance");
+        }
+        console.log("metEnSurbrillance " + carte.getNom() + " couleur " + couleurSubrillance);
+
         let position = new Position(this.partie.chercheCarte(carte));
         let x, y;
         let context = this.getContext(carte);
-        console.log("metEnSurbrillance " + carte.getNom() + " couleur " + couleurSubrillance);
 
         switch (position.getTypeDePile()) {
             case  "COL" :
@@ -141,7 +145,7 @@ class AffichagePartie {
                 break;
             case "PIL":
             case "CEL" :
-                x = (position.getNumero()  - 1) * (this.carteLargeur * largeurCartePlusEspace);
+                x = (position.getNumero()) * (this.carteLargeur * largeurCartePlusEspace);
                 y = 0;
                 this.metCarteEnSurbrillance(context, carte, x, y, couleurSubrillance);
                 break;
@@ -361,12 +365,14 @@ class AffichagePartie {
     }
 
     gerePremierClickSurColonne(carte, numeroColonne, numeroCarte) {
-        this.partie.coup.carte = carte;
-        this.partie.coup.origine = "COL" + (numeroColonne);
+        if (this.partie.isCarteCliquable(carte)) {
+            this.partie.coup.carte = carte;
+            this.partie.coup.origine = "COL" + (numeroColonne);
+        }
         let x = (numeroColonne ) * (this.carteLargeur * largeurCartePlusEspace);
         let y = (numeroCarte - 1) * this.carteHauteurTete;
         this.metEnSurbrillance(carte, couleurCarteJouee);
-        if (carte.valeur > 1) {
+        if (carte.valeur< 13) {
             if (carte.estRouge()) {
                 let carteAscendant = new Carte(carte.valeur + 1, "T");
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
@@ -380,7 +386,7 @@ class AffichagePartie {
                 this.metEnSurbrillance(carteAscendant, couleurCarteAscendante);
             }
         }
-        if (carte.valeur < 13) {
+        if (carte.valeur > 1) {
             if (carte.estRouge()) {
                 let carteDescendant = new Carte(carte.valeur -1, "T");
                 this.metEnSurbrillance(carteDescendant, couleurCarteDescendante);
@@ -395,7 +401,7 @@ class AffichagePartie {
             }
         }
         console.log("x : " + x + " y : " + y);
-        console.log("Premier clic, coup : " + this.partie.coup.carte.valeur + ' ' + this.partie.coup.carte.couleur + ' ' + this.partie.coup.origine + " ");
+        console.log("Premier clic, carte : " + carte.valeur + ' ' + carte.couleur + ' ' + numeroColonne + " ");
     }
 
     onClickPile() {
@@ -494,14 +500,16 @@ class AffichagePartie {
     }
 
     arriere() {
-        let coup = this.partie.listeDesCoups.deleteLastCoup();
-        coup.annuler(this.partie);
-        // Suppression du coup joué de la liste des coups joués
-        const textarea = document.getElementById('historique');
-        // Supprime la derniere entrée dans le textarea
-        textarea.value = textarea.value.substring(0, textarea.value.lastIndexOf(" "));
-        this.partie.listeDesCoups.deleteLastCoup();
-        this.affiche();
+        if (this.partie.listeDesCoups.getNbCoups() > 0) {
+            let coup = this.partie.listeDesCoups.deleteLastCoup();
+            coup.annuler(this.partie);
+            // Suppression du coup joué de la liste des coups joués
+            const textarea = document.getElementById('historique');
+            // Supprime la derniere entrée dans le textarea
+            textarea.value = textarea.value.substring(0, textarea.value.lastIndexOf(" "));
+            // this.partie.listeDesCoups.deleteLastCoup();
+            this.affiche();
+        }
     }
 
     ajouteHistorique(chaine) {
