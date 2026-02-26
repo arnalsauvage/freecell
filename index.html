@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreeCell Modern Edition</title>
+</head>
+<body>
+    <div id="app">
+        <header class="game-header">
+            <div class="logo">📕 FreeCell <span>Refactored</span></div>
+            <div class="stats">
+                <div class="stat-item">⏱️ <span id="timer">00:00</span></div>
+                <div class="stat-item">🏁 <span id="moveCount">0</span> coups</div>
+                <div class="stat-item difficulty-badge" id="difficultyContainer">
+                    <span id="label-diff">Diff:</span> <span id="difficultyLevel">-</span>
+                </div>
+            </div>
+            <div class="actions">
+                <div class="new-game-container">
+                    <span id="label-newgame" class="new-game-text">Nouvelle partie :</span>
+                    <div class="new-game-group">
+                        <button id="btnNouvellePartie" class="btn-icon-game" title="Aléatoire">🎲</button>
+                        <div class="difficulty-picker">
+                            <button class="btn-diff" data-level="1" title="Ultra Facile">🐣</button>
+                            <button class="btn-diff" data-level="2" title="Facile">🐼</button>
+                            <button class="btn-diff" data-level="3" title="Moyen">🐱</button>
+                            <button class="btn-diff" data-level="4" title="Difficile">🐒</button>
+                            <button class="btn-diff" data-level="5" title="Enfer !">🐺</button>
+                        </div>
+                    </div>
+                </div>
+                <button id="btnArriere" class="btn btn-secondary">Undo</button>
+                <button id="btnMonte" class="btn btn-secondary">Monte !</button>
+                <div class="toggle-container">
+                    <span id="label-autoassist" class="toggle-label">Auto-Assist</span>
+                    <label class="switch">
+                        <input type="checkbox" id="toggleAutoStack">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <button id="btnToggleSettings" class="btn btn-icon">⚙️</button>
+            </div>
+        </header>
+
+        <main class="game-board">
+            <div class="top-row">
+                <div class="canvas-container">
+                    <span class="label" id="label-freecells">Free Cells</span>
+                    <canvas id="canvasCaseLibre" width="490" height="180"></canvas>
+                </div>
+                <div class="canvas-container">
+                    <span class="label" id="label-foundations">Foundations</span>
+                    <canvas id="canvasPile" width="480" height="180"></canvas>
+                </div>
+            </div>
+
+            <div class="tableau">
+                <canvas id="canvasColonne" width="1000" height="550"></canvas>
+            </div>
+        </main>
+
+        <!-- Panneau latéral caché -->
+        <aside id="settingsDrawer" class="drawer hidden">
+            <div class="drawer-header">
+                <h2>Paramètres & Import</h2>
+                <button id="btnCloseDrawer" class="btn-close">&times;</button>
+            </div>
+            <div class="drawer-content">
+                <div class="form-group">
+                    <label for="langSelect" id="label-lang">🌐 Langue</label>
+                    <select id="langSelect" class="form-input">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label id="label-search">🔍 Rechercher une carte</label>
+                    <div class="picker-container">
+                        <div class="picker-row values" id="valuePicker">
+                            <button class="badge" data-val="1">A</button>
+                            <button class="badge" data-val="2">2</button>
+                            <button class="badge" data-val="3">3</button>
+                            <button class="badge" data-val="4">4</button>
+                            <button class="badge" data-val="5">5</button>
+                            <button class="badge" data-val="6">6</button>
+                            <button class="badge" data-val="7">7</button>
+                            <button class="badge" data-val="8">8</button>
+                            <button class="badge" data-val="9">9</button>
+                            <button class="badge" data-val="10">10</button>
+                            <button class="badge" data-val="11">V</button>
+                            <button class="badge" data-val="12">D</button>
+                            <button class="badge" data-val="13">R</button>
+                        </div>
+                        <div class="picker-row colors" id="colorPicker">
+                            <button class="badge" data-col="P">♠</button>
+                            <button class="badge" data-col="C">♥</button>
+                            <button class="badge" data-col="K">♦</button>
+                            <button class="badge" data-col="T">♣</button>
+                            <button class="badge text-badge" data-col="N" id="label-noir">Noir</button>
+                            <button class="badge text-badge" data-col="R" id="label-rouge">Rouge</button>
+                        </div>
+                        <button id="btnClearSearch" class="btn btn-full btn-secondary" style="margin-top: 10px; font-size: 0.8rem;">Effacer la recherche</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="historique">📜 Historique des coups</label>
+                    <textarea id="historique" readonly></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label id="label-saves">💾 Sauvegardes</label>
+                    <button id="btnSave" class="btn btn-full btn-primary">Sauvegarder la position</button>
+                    <div id="savedGamesList" class="saved-games-list">
+                        <!-- Les sauvegardes apparaîtront ici -->
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="zonetexteimport" id="label-import">📥 Importer une partie</label>
+                    <textarea id="zonetexteimport" rows="6"></textarea>
+                    <button id="btnImport" class="btn btn-full">Charger la configuration</button>
+                    <button id="btnDebug" class="btn btn-full btn-secondary" style="background-color: #444; margin-top: 20px;">🛠️ Debug Mode</button>
+                </div>
+            </div>
+        </aside>
+
+        <footer class="game-footer">
+            <p>Conçu par Arnal & Django - SOLID & Vite Project</p>
+        </footer>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+</body>
+</html>
