@@ -63,9 +63,11 @@ export class GameRenderer {
             } else if (state.selectedCard && state.selectedCard.peutPoserSur(carte)) {
                 highlight = COLORS.ASCENDING; // Là où je peux poser ma carte
             } else if (state.selectedCard && carte.peutPoserSur(state.selectedCard)) {
-                highlight = COLORS.DESCENDING; // Ce qui peut venir sur ma carte
+                if (!state.selectedOrigine?.startsWith('CEL')) {
+                    highlight = COLORS.DESCENDING; // Ce qui peut venir sur ma carte
+                }
             } else if (state.isCardSearched && state.isCardSearched(carte)) {
-                highlight = 'rgba(255, 0, 0, 0.5)';
+                highlight = 'rgba(255, 255, 0, 0.45)'; // Jaune fluo pâle pour la recherche
             }
 
             this.renderers.col.drawCard(carte, x, y, {
@@ -104,9 +106,11 @@ export class GameRenderer {
             } else if (state.selectedCard && state.selectedCard.peutPoserSur(carte)) {
                 highlight = COLORS.ASCENDING;
             } else if (state.selectedCard && carte.peutPoserSur(state.selectedCard)) {
-                highlight = COLORS.DESCENDING;
+                if (!state.selectedOrigine?.startsWith('CEL')) {
+                    highlight = COLORS.DESCENDING;
+                }
             } else if (state.isCardSearched && state.isCardSearched(carte)) {
-                highlight = 'rgba(255, 0, 0, 0.5)';
+                highlight = 'rgba(255, 255, 0, 0.45)';
             }
             
             this.renderers.case.drawCard(carte, x, y, {

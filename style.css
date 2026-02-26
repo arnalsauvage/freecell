@@ -67,6 +67,19 @@ body {
 .diff-level-4 { background-color: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3) !important; }
 .diff-level-5 { background-color: rgba(155, 89, 182, 0.2); color: #9b59b6; border: 1px solid rgba(155, 89, 182, 0.4) !important; font-weight: 900; }
 
+.game-over-msg {
+    background-color: var(--danger-color) !important;
+    color: white;
+    font-weight: bold;
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 /* Actions & New Game UI */
 .actions { display: flex; align-items: center; gap: 15px; }
 
@@ -79,29 +92,13 @@ body {
 }
 
 .btn-icon-game {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px;
-    filter: grayscale(0.8) opacity(0.5);
-    transition: all 0.2s;
+    background: none; border: none; font-size: 1.2rem; cursor: pointer;
+    padding: 5px; filter: grayscale(0.8) opacity(0.5); transition: all 0.2s;
 }
+.btn-icon-game:hover, .btn-icon-game.active { filter: grayscale(0) opacity(1); transform: scale(1.2) rotate(15deg); }
 
-.btn-icon-game:hover, .btn-icon-game.active {
-    filter: grayscale(0) opacity(1);
-    transform: scale(1.2) rotate(15deg);
-}
-
-.difficulty-picker {
-    display: flex; gap: 5px; margin-left: 10px; padding-left: 10px;
-    border-left: 1px solid rgba(255,255,255,0.1);
-}
-
-.btn-diff {
-    background: none; border: none; font-size: 1.3rem; cursor: pointer;
-    padding: 4px; filter: grayscale(0.8) opacity(0.5); transition: all 0.2s;
-}
+.difficulty-picker { display: flex; gap: 5px; margin-left: 10px; padding-left: 10px; border-left: 1px solid rgba(255,255,255,0.1); }
+.btn-diff { background: none; border: none; font-size: 1.3rem; cursor: pointer; padding: 4px; filter: grayscale(0.8) opacity(0.5); transition: all 0.2s; }
 .btn-diff:hover, .btn-diff.active { filter: grayscale(0) opacity(1); transform: scale(1.3); }
 
 /* Switch Style */
@@ -168,6 +165,8 @@ textarea { resize: none; }
 .replay-overlay .title { font-size: 2.4rem; font-weight: 900; color: var(--accent-color); text-transform: uppercase; letter-spacing: 4px; }
 .replay-overlay .subtitle { font-size: 1rem; color: white; opacity: 0.8; }
 
-.flying-card { position: absolute; z-index: 1000; pointer-events: none; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); background: white; border-radius: 4px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 5px; border: 1px solid black; width: 110px; height: 150px; }
-.flying-card .card-value { font-size: 30px; font-weight: bold; }
-.flying-card .card-icon { font-size: 40px; align-self: flex-end; }
+.flying-card { position: absolute; z-index: 1000; pointer-events: none; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); background: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; padding: 8px; border: 1px solid rgba(0,0,0,0.2); width: 110px; height: 150px; font-family: "Segoe UI", Arial; }
+.flying-card .card-value { font-size: 25px; font-weight: bold; color: inherit; }
+.flying-card .card-icon { font-size: 80px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); opacity: 0.1; color: inherit; }
+
+.hidden { display: none !important; }

@@ -60,20 +60,22 @@ export class GameController {
             container.classList.add(`diff-level-${diff}`);
             container.style.display = this.showDifficulty ? 'flex' : 'none';
         }
+        
+        // Mise à jour message Game Over
+        const gameOverEl = document.getElementById('gameOverMsg');
+        if (gameOverEl) gameOverEl.textContent = t.gameOver;
+
         this.renderSavedGames();
         this.refresh();
     }
 
-    // --- Gestion de la Sauvegarde ---
     saveCurrentPosition() {
         const t = translations[this.currentLang];
         const now = new Date();
         const days = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
         const months = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
-        
         const defaultName = `Partie ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getHours()}h${now.getMinutes().toString().padStart(2, '0')}`;
         const name = window.prompt(t.savePrompt, defaultName);
-        
         if (name) {
             const saves = JSON.parse(localStorage.getItem('freecell_saves') || '{}');
             saves[name] = {
@@ -91,20 +93,16 @@ export class GameController {
         const t = translations[this.currentLang];
         const container = document.getElementById('savedGamesList');
         const saves = JSON.parse(localStorage.getItem('freecell_saves') || '{}');
-        
         if (Object.keys(saves).length === 0) {
             container.innerHTML = `<div style="text-align:center; opacity:0.5; font-size:0.8rem;">${t.noSavedGames}</div>`;
             return;
         }
-
         container.innerHTML = Object.keys(saves).map(name => `
             <div class="save-item" data-name="${name}">
                 <span>${name} (${saves[name].moves} m)</span>
                 <span class="delete-save" data-name="${name}">&times;</span>
             </div>
         `).join('');
-
-        // Listeners pour charger/supprimer
         container.querySelectorAll('.save-item').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (e.target.classList.contains('delete-save')) {
@@ -121,17 +119,17 @@ export class GameController {
         const save = saves[name];
         if (save) {
             this.partie.importState(save.state);
-            this.moves = save.moves;
-            document.getElementById('moveCount').textContent = this.moves;
-            this.uiElements.historique.value = save.history;
-            
-            // Reprise du timer
             this.resetStats();
             this.moves = save.moves;
             document.getElementById('moveCount').textContent = this.moves;
-            this.startTime = Date.now() - (save.elapsed * 1000);
-            this.startTimer();
-            
+            this.uiElements.historique.value = save.history;
+            if (save.elapsed > 0) {
+                this.startTime = Date.now() - (save.elapsed * 1000);
+                const m = Math.floor(save.elapsed / 60).toString().padStart(2, '0');
+                const s = (save.elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `${m}:${s}`;
+                this.startTimer();
+            }
             this.updateUI();
             document.getElementById('settingsDrawer').classList.add('hidden');
         }
@@ -143,8 +141,6 @@ export class GameController {
         localStorage.setItem('freecell_saves', JSON.stringify(saves));
         this.renderSavedGames();
     }
-
-    // --- Fin Gestion Sauvegarde ---
 
     startTimer() {
         if (this.timerInterval) return;
@@ -167,6 +163,8 @@ export class GameController {
         if (this.timerInterval) clearInterval(this.timerInterval);
         this.timerInterval = null;
         this.startTime = null;
+        const gameOverEl = document.getElementById('gameOverMsg');
+        if (gameOverEl) gameOverEl.classList.add('hidden');
     }
 
     handleSearch(val, col) {
@@ -228,8 +226,8 @@ export class GameController {
             ghost.className = 'flying-card';
             ghost.style.left = `${startPos.x}px`;
             ghost.style.top = `${startPos.y}px`;
-            ghost.style.color = card.estRouge() ? 'red' : 'black';
-            ghost.innerHTML = `<span class="card-value">${card.getNomCourtFigure()}</span><span class="card-icon">${card.getIconeCouleur()}</span>`;
+            ghost.style.color = card.estRouge() ? '#e74c3c' : '#2c3e50';
+            ghost.innerHTML = `<span class="card-value">${card.getNomCourtFigure()} ${card.getIconeCouleur()}</span><span class="card-icon">${card.getIconeCouleur()}</span>`;
             document.body.appendChild(ghost);
             ghost.offsetHeight;
             ghost.style.left = `${endPos.x}px`;
@@ -250,6 +248,23 @@ export class GameController {
         const y = event.clientY - rect.top;
         const numPile = Math.floor(x / (CARD_DIMENSIONS.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR));
         const numCarte = Math.floor(y / CARD_DIMENSIONS.HEADER_HEIGHT) + 1;
+        if (canvasType === 'pile') {
+            this.selectedCard = null;
+            this.origine = null;
+            const pile = this.partie.getPile(numPile);
+            const cardOnTop = pile.getCarte();
+            if (cardOnTop) {
+                if (cardOnTop.valeur < 13) {
+                    this.handleSearch(cardOnTop.valeur + 1, cardOnTop.couleur);
+                    return; 
+                }
+            } else {
+                this.handleSearch(1, ["P", "C", "K", "T"][numPile]);
+                return;
+            }
+            this.refresh();
+            return;
+        }
         this.processClick(canvasType, numPile, numCarte);
     }
 
@@ -310,16 +325,13 @@ export class GameController {
             const col = this.partie.getColonne(i);
             const carte = col.getCarte();
             if (carte && this.partie.peutMonterDansLaPile(carte)) {
-                const pos = `COL${i}${col.getNbCartes()}`;
-                const success = await this.tryAutoMove(carte, pos);
-                if (success) return true;
+                return await this.tryAutoMove(carte, `COL${i}${col.getNbCartes()}`);
             }
         }
         for (let i = 0; i < NB_PILES; i++) {
             const carte = this.partie.getCaseLibre(i).getCarte();
             if (carte && this.partie.peutMonterDansLaPile(carte)) {
-                const success = await this.tryAutoMove(carte, `CEL${i}`);
-                if (success) return true;
+                return await this.tryAutoMove(carte, `CEL${i}`);
             }
         }
         return false;
@@ -459,8 +471,16 @@ export class GameController {
     }
 
     refresh() {
+        // Vérification impasse
+        const gameOverEl = document.getElementById('gameOverMsg');
+        if (gameOverEl) {
+            if (this.partie.estBloquee()) gameOverEl.classList.remove('hidden');
+            else gameOverEl.classList.add('hidden');
+        }
+
         this.renderer.render(this.partie, { 
             selectedCard: this.selectedCard,
+            selectedOrigine: this.origine,
             isCardSearched: (carte) => this.isCardSearched(carte),
             hidingCard: this.animatingCard
         });

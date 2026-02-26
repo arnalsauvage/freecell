@@ -18,6 +18,7 @@ export class PartieSolitaire {
         this.initColonnes();
         this.initPiles();
         this.initCasesLibres();
+        this.donneInitiale = [];
     }
 
     initColonnes() {
@@ -77,7 +78,6 @@ export class PartieSolitaire {
         if (!carte) return -1;
         for (let i = 0; i < NB_COLONNES; i++) {
             const col = this.getColonne(i);
-            // On peut poser sur une colonne vide ou si les règles de pose sont respectées
             if (col.getNbCartes() === 0 || carte.peutPoserSur(col.getCarte())) {
                 return i;
             }
@@ -87,20 +87,16 @@ export class PartieSolitaire {
 
     chercheCarte(carte) {
         if (!carte) return null;
-
-        // Colonnes
         for (let i = 0; i < NB_COLONNES; i++) {
             for (let j = 0; j < this.colonnes[i].getNbCartes(); j++) {
                 if (this.colonnes[i].getCarteN(j).isEquivalent(carte)) {
-                    return `COL${i}${j + 1}`; // +1 pour l'humain si besoin, mais attention au parsing
+                    return `COL${i}${j + 1}`;
                 }
             }
         }
-        // Piles
         for (let i = 0; i < NB_PILES; i++) {
             if (this.pile[i].contientCarte(carte)) return `PIL${i}`;
         }
-        // Cellules
         for (let i = 0; i < NB_PILES; i++) {
             if (this.casesLibres[i].getCarte()?.isEquivalent(carte)) return `CEL${i}`;
         }
@@ -115,10 +111,7 @@ export class PartieSolitaire {
         const pos = new Position(posStr);
         if (pos.getTypeDePile() === "COL") {
             const colonne = this.getColonne(pos.getNumero());
-            // En bas de colonne ?
             if (colonne.getCarte()?.isEquivalent(carte)) return true;
-            
-            // Sinon alternance ?
             const cliquables = this.cartesCliquablesColonne(colonne);
             return cliquables.contientCarte(carte);
         }
@@ -150,39 +143,64 @@ export class PartieSolitaire {
         return this.pile.every(p => p.getNbCartes() === CARTES_PAR_COULEUR);
     }
 
+    estBloquee() {
+        if (this.verifieVictoire()) return false;
+        const sources = [];
+        this.colonnes.forEach((col, i) => {
+            if (!col.estVide()) {
+                const cliquables = this.cartesCliquablesColonne(col);
+                for(let j=0; j<cliquables.getNbCartes(); j++) {
+                    sources.push({ carte: cliquables.getCarteN(j), pos: `COL${i}` });
+                }
+            }
+        });
+        this.casesLibres.forEach((cell, i) => {
+            if (!cell.estLibre()) sources.push({ carte: cell.getCarte(), pos: `CEL${i}` });
+        });
+
+        for (const source of sources) {
+            const indexPile = this.getIndexPileCouleurCarte(source.carte);
+            const coupPile = new Coup(source.carte, source.pos, `PIL${indexPile}`);
+            if (coupPile.estValide(this)) return false;
+
+            for (let i = 0; i < NB_COLONNES; i++) {
+                const coupCol = new Coup(source.carte, source.pos, `COL${i}`);
+                if (coupCol.estValide(this)) return false;
+            }
+
+            for (let i = 0; i < NB_PILES; i++) {
+                const coupCell = new Coup(source.carte, source.pos, `CEL${i}`);
+                if (coupCell.estValide(this)) return false;
+            }
+        }
+        return true;
+    }
+
     demarrePartie(cibleDifficulte = null) {
         if (cibleDifficulte === null) {
-            // Cas standard (Aléatoire complet)
             this.initColonnes();
             this.initPiles();
             this.initCasesLibres();
             this.distribue();
         } else {
-            // Algorithme Best-of-20 pour cibler la difficulté
             let meilleurTirage = null;
             let plusPetiteEcart = Infinity;
-
-            for (let i = 0; i < 100; i++) { // On passe à 100 tentatives
+            for (let i = 0; i < 100; i++) {
                 this.initColonnes();
                 this.initPiles();
                 this.initCasesLibres();
                 this.distribue();
-                
                 const diffGeneree = this.calculerDifficulte();
                 const ecart = Math.abs(diffGeneree - cibleDifficulte);
-
                 if (ecart === 0) {
                     meilleurTirage = this.colonnes.map(col => [...col.pileDeCartes]);
                     break; 
                 }
-
                 if (ecart < plusPetiteEcart) {
                     plusPetiteEcart = ecart;
                     meilleurTirage = this.colonnes.map(col => [...col.pileDeCartes]);
                 }
             }
-
-            // On applique le meilleur tirage trouvé
             this.initColonnes();
             this.initPiles();
             this.initCasesLibres();
@@ -190,34 +208,27 @@ export class PartieSolitaire {
                 this.colonnes[i].pileDeCartes = cards;
             });
         }
-
         this.listeDesCoups = new ListeCoups();
         this.donneInitiale = this.colonnes.map(col => [...col.pileDeCartes]);
     }
 
     calculerDifficulte() {
         let score = 0;
-        
-        // 1. Profondeur des As et des 2
         for (let i = 0; i < NB_COLONNES; i++) {
             const col = this.getColonne(i);
             const nb = col.getNbCartes();
             for (let j = 0; j < nb; j++) {
                 const carte = col.getCarteN(j);
                 const distDuBas = (nb - 1) - j;
-                if (carte.valeur === 1) score += distDuBas * 8; // On monte à 8 pour les As
-                if (carte.valeur === 2) score += distDuBas * 4; // On monte à 4 pour les 2
+                if (carte.valeur === 1) score += distDuBas * 8;
+                if (carte.valeur === 2) score += distDuBas * 4;
             }
         }
-
-        // 2. Coups immédiats vers les piles
         let coupsPiles = 0;
         for (let i = 0; i < NB_COLONNES; i++) {
             if (this.peutMonterDansLaPile(this.getColonne(i).getCarte())) coupsPiles++;
         }
         score -= coupsPiles * 15;
-
-        // 3. Séquences déjà formées
         let sequences = 0;
         for (let i = 0; i < NB_COLONNES; i++) {
             const col = this.getColonne(i);
@@ -226,7 +237,6 @@ export class PartieSolitaire {
             }
         }
         score -= sequences * 5;
-
         const names = ["Ultra Facile", "Facile", "Moyen", "Difficile", "Enfer !"];
         let level = 3;
         if (score < 30) level = 1;
@@ -234,9 +244,7 @@ export class PartieSolitaire {
         else if (score < 80) level = 3;
         else if (score < 105) level = 4;
         else level = 5;
-
         console.log(`[Difficulty Engine] Score total : ${score} -> ${names[level-1]} (As/2: ${score + (coupsPiles*15) + (sequences*5)} | Piles: -${coupsPiles*15} | Seq: -${sequences*5})`);
-
         return level;
     }
 
@@ -264,7 +272,6 @@ export class PartieSolitaire {
         this.initColonnes();
         this.initPiles();
         this.initCasesLibres();
-
         state.colonnes.forEach((cards, i) => {
             cards.forEach(data => this.colonnes[i].ajouteCarte(new Carte(data.v, data.c)));
         });
@@ -275,8 +282,6 @@ export class PartieSolitaire {
             if (data) this.casesLibres[i].poseCarte(new Carte(data.v, data.c));
         });
         this.donneInitiale = state.donneInitiale.map(col => col.map(data => new Carte(data.v, data.c)));
-        
-        // Reconstruction de la liste des coups
         this.listeDesCoups = new ListeCoups();
         if (state.historique) {
             state.historique.forEach(data => {
