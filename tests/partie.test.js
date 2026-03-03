@@ -93,4 +93,41 @@ describe('PartieSolitaire', () => {
                       maPartie.casesLibres.filter(c => !c.estLibre()).length;
         expect(count).toBe(52);
     });
+
+    it('doit exporter et importer l\'état de la partie correctement', () => {
+        // Modifier l'état initial
+        const asPique = maPartie.getColonne(7).prendCarte();
+        maPartie.getCaseLibre(0).poseCarte(asPique);
+        
+        const state = maPartie.exportState();
+        expect(state.cases[0]).not.toBeNull();
+        expect(state.cases[0].v).toBe(1);
+        
+        const nouvellePartie = new PartieSolitaire();
+        nouvellePartie.importState(state);
+        
+        expect(nouvellePartie.getCaseLibre(0).getCarte().isEquivalent(asPique)).toBe(true);
+        expect(nouvellePartie.getColonne(7).getNbCartes()).toBe(maPartie.getColonne(7).getNbCartes());
+    });
+
+    it('doit calculer une difficulté cohérente', () => {
+        const diff = maPartie.calculerDifficulte();
+        expect(diff).toBeGreaterThanOrEqual(1);
+        expect(diff).toBeLessThanOrEqual(5);
+    });
+
+    it('doit détecter si la partie est bloquée', () => {
+        // Au début d'une partie normale, elle n'est pas bloquée
+        expect(maPartie.estBloquee()).toBe(false);
+        
+        // On pourrait simuler un blocage total ici, mais c'est complexe.
+        // On vérifie au moins que la victoire n'est pas considérée comme un blocage.
+        for (let i = 0; i < NB_PILES; i++) {
+            const p = maPartie.getPile(i);
+            for (let v = 1; v <= CARTES_PAR_COULEUR; v++) {
+                p.ajouteCarte(new Carte(v, ["P", "C", "K", "T"][i]));
+            }
+        }
+        expect(maPartie.estBloquee()).toBe(false); // Victoire = pas bloqué
+    });
 });
