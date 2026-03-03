@@ -151,6 +151,21 @@ canvas { max-width: 100%; height: auto; filter: drop-shadow(var(--card-shadow));
     .top-row { gap: 5px; }
     .toggle-container { padding: 4px 6px; }
     .toggle-label { font-size: 0.55rem; }
+
+    /* Overlay Victoire Mobile */
+    .replay-overlay {
+        padding: 15px 25px;
+        bottom: 20px;
+        width: 85%;
+        gap: 5px;
+    }
+    .replay-overlay .title {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+    }
+    .replay-overlay .subtitle {
+        font-size: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
