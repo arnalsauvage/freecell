@@ -24,6 +24,7 @@ export class GameController {
         this.isReplaying = false;
         this.stopReplayRequested = false;
         this.showDifficulty = true;
+        this.searchTimeout = null;
     }
 
     setLanguage(lang) {
@@ -168,12 +169,24 @@ export class GameController {
     }
 
     handleSearch(val, col) {
+        if (this.searchTimeout) clearTimeout(this.searchTimeout);
+        
         if (val !== undefined) this.searchVal = val;
         if (col !== undefined) this.searchCol = col;
         this.refresh();
+
+        // Disparition automatique après 10 secondes
+        this.searchTimeout = setTimeout(() => {
+            this.clearSearch();
+            if (this.uiElements.onSearchCleared) {
+                this.uiElements.onSearchCleared();
+            }
+        }, 10000);
     }
 
     clearSearch() {
+        if (this.searchTimeout) clearTimeout(this.searchTimeout);
+        this.searchTimeout = null;
         this.searchVal = null;
         this.searchCol = null;
         this.refresh();

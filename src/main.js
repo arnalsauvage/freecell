@@ -16,7 +16,10 @@ const canvases = {
 const uiElements = {
     historique: document.getElementById('historique'),
     importText: document.getElementById('zonetexteimport'),
-    chercheInput: document.getElementById('chercheCarte')
+    chercheInput: document.getElementById('chercheCarte'),
+    onSearchCleared: () => {
+        document.querySelectorAll('.picker-row .badge').forEach(b => b.classList.remove('active'));
+    }
 };
 
 const renderer = new GameRenderer(canvases);
