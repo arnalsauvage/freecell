@@ -19,10 +19,25 @@ export const COLORS = {
 export class CardRenderer {
     constructor(context) {
         this.ctx = context;
+        this.scale = 1;
+    }
+
+    setScale(scale) {
+        this.scale = scale;
+    }
+
+    get scaled() {
+        return {
+            WIDTH: CARD_DIMENSIONS.WIDTH * this.scale,
+            HEIGHT: CARD_DIMENSIONS.HEIGHT * this.scale,
+            HEADER_HEIGHT: CARD_DIMENSIONS.HEADER_HEIGHT * this.scale,
+            RADIUS: CARD_DIMENSIONS.RADIUS * this.scale
+        };
     }
 
     drawCard(carte, x, y, options = {}) {
         const { highlightColor, isCliquable } = options;
+        const s = this.scaled;
 
         this.drawShadow(x, y);
         this.drawBase(x, y, carte, isCliquable);
@@ -38,113 +53,111 @@ export class CardRenderer {
     }
 
     drawShadow(x, y) {
+        const s = this.scaled;
         this.ctx.save();
         this.ctx.shadowColor = 'rgba(0,0,0,0.4)';
-        this.ctx.shadowBlur = 8;
-        this.ctx.shadowOffsetY = 3;
+        this.ctx.shadowBlur = 8 * this.scale;
+        this.ctx.shadowOffsetY = 3 * this.scale;
         this.ctx.beginPath();
-        this.ctx.roundRect(x, y, CARD_DIMENSIONS.WIDTH, CARD_DIMENSIONS.HEIGHT, CARD_DIMENSIONS.RADIUS);
+        this.ctx.roundRect(x, y, s.WIDTH, s.HEIGHT, s.RADIUS);
         this.ctx.fill();
         this.ctx.restore();
     }
 
     drawBase(x, y, carte, isCliquable) {
+        const s = this.scaled;
         this.ctx.save();
         this.ctx.beginPath();
-        this.ctx.roundRect(x, y, CARD_DIMENSIONS.WIDTH, CARD_DIMENSIONS.HEIGHT, CARD_DIMENSIONS.RADIUS);
+        this.ctx.roundRect(x, y, s.WIDTH, s.HEIGHT, s.RADIUS);
         
         if (!carte) {
             this.ctx.fillStyle = "#bbb";
         } else {
-            // Assistance visuelle : Blanc pur si jouable, Gris si bloquée
             this.ctx.fillStyle = isCliquable ? "#ffffff" : "#d0d0d0";
         }
         this.ctx.fill();
 
-        // Si la carte est grise, on réduit aussi un peu l'opacité globale pour l'effet "désactivé"
         if (carte && !isCliquable) {
             this.ctx.globalAlpha = 0.85;
         }
 
-        // Bordure nette
         this.ctx.strokeStyle = "rgba(0,0,0,0.4)";
-        this.ctx.lineWidth = 1;
+        this.ctx.lineWidth = Math.max(1, 1 * this.scale);
         this.ctx.stroke();
         this.ctx.restore();
     }
 
     drawWatermark(carte, x, y) {
+        const s = this.scaled;
         this.ctx.save();
         this.ctx.fillStyle = carte.estRouge() ? "rgba(231, 76, 60, 0.22)" : "rgba(44, 62, 80, 0.22)";
-        this.ctx.font = `bold 100px Arial`;
+        this.ctx.font = `bold ${100 * this.scale}px Arial`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(
             carte.getIconeCouleur(), 
-            x + CARD_DIMENSIONS.WIDTH / 2, 
-            y + CARD_DIMENSIONS.HEIGHT / 1.8
+            x + s.WIDTH / 2, 
+            y + s.HEIGHT / 1.8
         );
         this.ctx.restore();
     }
 
     drawEmptySlot(x, y) {
+        const s = this.scaled;
         this.ctx.save();
         
-        // Fond contrasté
         this.ctx.beginPath();
-        this.ctx.roundRect(x, y, CARD_DIMENSIONS.WIDTH, CARD_DIMENSIONS.HEIGHT, CARD_DIMENSIONS.RADIUS);
+        this.ctx.roundRect(x, y, s.WIDTH, s.HEIGHT, s.RADIUS);
         this.ctx.fillStyle = COLORS.EMPTY;
         this.ctx.fill();
         
-        // Bordure claire pour la visibilité
         this.ctx.strokeStyle = "rgba(255,255,255,0.2)";
-        this.ctx.lineWidth = 2;
+        this.ctx.lineWidth = 2 * this.scale;
         this.ctx.stroke();
         
         this.ctx.restore();
     }
 
     drawHighlight(x, y, color) {
+        const s = this.scaled;
         this.ctx.save();
         this.ctx.fillStyle = color;
         this.ctx.beginPath();
-        this.ctx.roundRect(x, y, CARD_DIMENSIONS.WIDTH, CARD_DIMENSIONS.HEADER_HEIGHT, [CARD_DIMENSIONS.RADIUS, CARD_DIMENSIONS.RADIUS, 0, 0]);
+        this.ctx.roundRect(x, y, s.WIDTH, s.HEADER_HEIGHT, [s.RADIUS, s.RADIUS, 0, 0]);
         this.ctx.fill();
         this.ctx.restore();
     }
 
     drawText(carte, x, y) {
+        const s = this.scaled;
         this.ctx.save();
         const color = carte.estRouge() ? "#e74c3c" : "#2c3e50";
         this.ctx.fillStyle = color;
         
-        // Chiffre/Lettre
-        const fontSize = CARD_DIMENSIONS.HEADER_HEIGHT - 6;
+        const fontSize = s.HEADER_HEIGHT - (6 * this.scale);
         this.ctx.font = `bold ${fontSize}px "Segoe UI", Arial`;
         const figure = carte.getNomCourtFigure();
-        this.ctx.fillText(figure, x + 8, y + CARD_DIMENSIONS.HEADER_HEIGHT - 8);
+        this.ctx.fillText(figure, x + (8 * this.scale), y + s.HEADER_HEIGHT - (8 * this.scale));
         
-        // Mesure dynamique de la largeur du texte pour décaler l'icône
         const textWidth = this.ctx.measureText(figure).width;
         
-        // Petit symbole à côté (bien espacé)
         const icone = carte.getIconeCouleur();
-        this.ctx.font = `${fontSize - 4}px Arial`;
-        this.ctx.fillText(icone, x + 12 + textWidth, y + CARD_DIMENSIONS.HEADER_HEIGHT - 8);
+        this.ctx.font = `${fontSize - (4 * this.scale)}px Arial`;
+        this.ctx.fillText(icone, x + (12 * this.scale) + textWidth, y + s.HEADER_HEIGHT - (8 * this.scale));
         
         this.ctx.restore();
     }
 
     drawEmptyPileText(pile, x, y) {
+        const s = this.scaled;
         this.ctx.save();
-        // Plus net et contrasté
         this.ctx.fillStyle = pile.estRouge() ? "rgba(231, 76, 60, 0.4)" : "rgba(255, 255, 255, 0.25)";
-        this.ctx.font = `bold ${CARD_DIMENSIONS.HEADER_HEIGHT * 2.5}px Arial`;
+        this.ctx.font = `bold ${s.HEADER_HEIGHT * 2.5}px Arial`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         
         const icones = { "P": "♠", "C": "♥", "K": "♦", "T": "♣" };
-        this.ctx.fillText(icones[pile.couleur], x + CARD_DIMENSIONS.WIDTH / 2, y + CARD_DIMENSIONS.HEIGHT / 2);
+        this.ctx.fillText(icones[pile.couleur], x + s.WIDTH / 2, y + s.HEIGHT / 2);
         this.ctx.restore();
     }
 }

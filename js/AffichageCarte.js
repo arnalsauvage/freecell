@@ -58,7 +58,7 @@ class AffichageCarte {
 
     dessineTexte(carte, context, x, y) {
         // texte de la carte
-        if (carte != null && carte.estRouge()) {
+        if (carte?.estRouge()) {
             context.fillStyle = "red";
         } else {
             context.fillStyle = "black";

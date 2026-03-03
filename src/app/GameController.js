@@ -203,12 +203,21 @@ export class GameController {
         const pos = new Position(posStr);
         const type = pos.getTypeDePile().toLowerCase();
         const canvasMap = { col: 'col', pil: 'pile', cel: 'case' };
-        const canvas = this.uiElements.canvases[canvasMap[type]];
+        const canvasType = canvasMap[type];
+        const canvas = this.uiElements.canvases[canvasType];
         const rect = canvas.getBoundingClientRect();
-        const xOffset = pos.getNumero() * (CARD_DIMENSIONS.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR);
-        let yOffset = 0;
-        if (type === 'col') yOffset = (pos.getIndice() - 1) * CARD_DIMENSIONS.HEADER_HEIGHT;
-        return { x: rect.left + xOffset + window.scrollX, y: rect.top + yOffset + window.scrollY };
+        
+        const s = this.renderer.renderers[canvasType].scaled;
+        
+        const xCanvas = pos.getNumero() * (s.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR);
+        let yCanvas = 0;
+        if (type === 'col') yCanvas = (pos.getIndice() - 1) * s.HEADER_HEIGHT;
+        
+        // Conversion Coordonnées Canvas -> Coordonnées Écran (CSS)
+        const xCSS = xCanvas * (rect.width / canvas.width);
+        const yCSS = yCanvas * (rect.height / canvas.height);
+        
+        return { x: rect.left + xCSS + window.scrollX, y: rect.top + yCSS + window.scrollY };
     }
 
     animateCoup(card, startPos) {
@@ -222,12 +231,16 @@ export class GameController {
                 this.refresh();
                 return resolve();
             }
+            
+            const s = this.renderer.renderers.col.scaled;
             const ghost = document.createElement('div');
             ghost.className = 'flying-card';
+            ghost.style.width = `${s.WIDTH}px`;
+            ghost.style.height = `${s.HEIGHT}px`;
             ghost.style.left = `${startPos.x}px`;
             ghost.style.top = `${startPos.y}px`;
             ghost.style.color = card.estRouge() ? '#e74c3c' : '#2c3e50';
-            ghost.innerHTML = `<span class="card-value">${card.getNomCourtFigure()} ${card.getIconeCouleur()}</span><span class="card-icon">${card.getIconeCouleur()}</span>`;
+            ghost.innerHTML = `<span class="card-value" style="font-size:${s.HEADER_HEIGHT * 0.8}px">${card.getNomCourtFigure()} ${card.getIconeCouleur()}</span><span class="card-icon" style="font-size:${s.HEIGHT * 0.6}px">${card.getIconeCouleur()}</span>`;
             document.body.appendChild(ghost);
             ghost.offsetHeight;
             ghost.style.left = `${endPos.x}px`;
@@ -244,10 +257,31 @@ export class GameController {
     handleCanvasClick(canvasType, event) {
         if (this.isReplaying) return;
         const rect = event.currentTarget.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const numPile = Math.floor(x / (CARD_DIMENSIONS.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR));
-        const numCarte = Math.floor(y / CARD_DIMENSIONS.HEADER_HEIGHT) + 1;
+        
+        // Coordonnées relatives à l'élément (CSS pixels)
+        let clientX = event.clientX;
+        let clientY = event.clientY;
+        
+        // Support tactile
+        if (event.touches && event.touches[0]) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else if (event.changedTouches && event.changedTouches[0]) {
+            clientX = event.changedTouches[0].clientX;
+            clientY = event.changedTouches[0].clientY;
+        }
+
+        const cssX = clientX - rect.left;
+        const cssY = clientY - rect.top;
+        
+        // Conversion en coordonnées Canvas (car le canvas peut être redimensionné par le CSS)
+        const x = cssX * (event.currentTarget.width / rect.width);
+        const y = cssY * (event.currentTarget.height / rect.height);
+
+        const s = this.renderer.renderers[canvasType].scaled;
+        const numPile = Math.floor(x / (s.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR));
+        const numCarte = Math.floor(y / s.HEADER_HEIGHT) + 1;
+
         if (canvasType === 'pile') {
             this.selectedCard = null;
             this.origine = null;
@@ -287,10 +321,16 @@ export class GameController {
     async handleDblClick(canvasType, event) {
         if (this.isReplaying) return;
         const rect = event.currentTarget.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        const numPile = Math.floor(x / (CARD_DIMENSIONS.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR));
-        const numCarte = Math.floor(y / CARD_DIMENSIONS.HEADER_HEIGHT) + 1;
+        
+        const cssX = event.clientX - rect.left;
+        const cssY = event.clientY - rect.top;
+        const x = cssX * (event.currentTarget.width / rect.width);
+        const y = cssY * (event.currentTarget.height / rect.height);
+
+        const s = this.renderer.renderers[canvasType].scaled;
+        const numPile = Math.floor(x / (s.WIDTH * CARD_DIMENSIONS.SPACING_FACTOR));
+        const numCarte = Math.floor(y / s.HEADER_HEIGHT) + 1;
+        
         let carte = null;
         if (canvasType === 'col') {
             carte = this.partie.getColonne(numPile).getCarteN(numCarte - 1) || this.partie.getColonne(numPile).getCarte();

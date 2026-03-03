@@ -1,5 +1,4 @@
 console.log("Démarrage du script main.js...");
-import '../style.css';
 import { PartieSolitaire } from './domain/PartieSolitaire.js';
 import { GameRenderer } from './ui/GameRenderer.js';
 import { GameController } from './app/GameController.js';
@@ -24,12 +23,26 @@ const renderer = new GameRenderer(canvases);
 const controller = new GameController(partie, renderer, { ...uiElements, canvases });
 
 // Event Listeners
-canvases.col.addEventListener('click', (e) => controller.handleCanvasClick('col', e));
-canvases.pile.addEventListener('click', (e) => controller.handleCanvasClick('pile', e));
-canvases.case.addEventListener('click', (e) => controller.handleCanvasClick('case', e));
+const setupCanvasEvents = (name, canvas) => {
+    canvas.addEventListener('click', (e) => controller.handleCanvasClick(name, e));
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Évite le scroll pendant qu'on joue
+        controller.handleCanvasClick(name, e);
+    }, { passive: false });
+};
+
+setupCanvasEvents('col', canvases.col);
+setupCanvasEvents('pile', canvases.pile);
+setupCanvasEvents('case', canvases.case);
 
 canvases.col.addEventListener('dblclick', (e) => controller.handleDblClick('col', e));
 canvases.case.addEventListener('dblclick', (e) => controller.handleDblClick('case', e));
+
+// Gestion du Redimensionnement
+window.addEventListener('resize', () => {
+    renderer.resize();
+    controller.refresh();
+});
 
 document.getElementById('btnNouvellePartie').addEventListener('click', (e) => {
     controller.showDifficulty = false; // Hasard = Masqué
